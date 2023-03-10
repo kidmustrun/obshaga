@@ -1,7 +1,7 @@
 <template>
   <div
-    class="container-fluid d-flex flex-column justify-content-center align-items-center"
-  >
+    class="container-fluid d-flex flex-column justify-content-center align-items-center position-relative"
+  >    <transition name="auth"></transition>
     <img class="logo" src="logo.svg" />
     <div class="mt-4 text-center">
     <div class="auth_form">
@@ -23,7 +23,7 @@
     <NuxtLink class="link" to="/register">зарегистрироваться</NuxtLink>
   </div>
   </div>
-
+  <NuxtLink class="link_grey about" to="auth/about">о приложении</NuxtLink>
   </div>
 </template>
 
@@ -32,7 +32,7 @@ export default {
   name: 'AuthPage',
 }
 </script>
-<style>
+<style scoped>
 .container-fluid {
   height: 100vh;
 }
@@ -99,6 +99,11 @@ export default {
   line-height: 32px;
   background-color: transparent;
 }
+.link_grey{
+  color: #838383;
+  font-size: 28px;
+  line-height: 32px;
+}
 .link{
   color: #000;
   font-size: 28px;
@@ -106,5 +111,14 @@ export default {
 }
 .link:hover{
   color: #3d3d3d;
+  text-decoration-color:#3d3d3d;
+}
+.link_grey:hover{
+  color: #696969;
+  text-decoration-color: #696969;
+}
+.about{
+  position:absolute;
+  bottom: 5vh;
 }
 </style>

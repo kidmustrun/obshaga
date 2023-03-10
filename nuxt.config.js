@@ -21,7 +21,7 @@ export default {
     ],
   },
 
-  css: [ "~/node_modules/bootstrap/dist/css/bootstrap.css", '~/assets/fonts/gilroy.css'],
+  css: [ "~/node_modules/bootstrap/dist/css/bootstrap.css", '~/assets/fonts/gilroy.css', '~/assets/main.css'],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [ { src: "~/node_modules/bootstrap/dist/js/bootstrap.js", mode: "client" }],
