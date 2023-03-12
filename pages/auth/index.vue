@@ -1,29 +1,43 @@
 <template>
   <div
     class="container-fluid d-flex flex-column justify-content-center align-items-center position-relative"
-  >    <transition name="auth"></transition>
-    <img class="logo" src="logo.svg" />
+  >
+    <img class="logo" src="~/assets/logo.svg" />
     <div class="mt-4 text-center">
-    <div class="auth_form">
-      <input class="auth_input" type="text" id="login" name="login" required readonly
-    onfocus="this.removeAttribute('readonly')"/>
-      <span class="floating-label">логин</span>
-      <span class="error-label"></span>
+      <div class="auth_form">
+        <input
+          class="auth_input"
+          type="text"
+          id="login"
+          name="login"
+          required
+          readonly
+          onfocus="this.removeAttribute('readonly')"
+        />
+        <span class="floating-label">логин</span>
+        <span class="error-label"></span>
+      </div>
+      <div class="auth_form">
+        <input
+          class="auth_input"
+          type="password"
+          id="password"
+          name="password"
+          required
+          readonly
+          onfocus="this.removeAttribute('readonly')"
+        />
+        <span class="floating-label">пароль</span>
+        <span class="error-label"></span>
+      </div>
+      <div class="mt-3">
+        <button class="button-link">войти</button>
+      </div>
+      <div class="mt-2">
+        <NuxtLink class="link" to="/register">зарегистрироваться</NuxtLink>
+      </div>
     </div>
-    <div class="auth_form">
-      <input class="auth_input" type="password" id="password" name="password" required readonly
-    onfocus="this.removeAttribute('readonly')"/>
-      <span class="floating-label">пароль</span>
-      <span class="error-label"></span>
-    </div>
-    <div class="mt-3">
-    <button class="button-link">войти</button>
-    </div>
-    <div class="mt-2">
-    <NuxtLink class="link" to="/register">зарегистрироваться</NuxtLink>
-  </div>
-  </div>
-  <NuxtLink class="link_grey about" to="auth/about">о приложении</NuxtLink>
+    <NuxtLink class="link_grey about" to="auth/about">о приложении</NuxtLink>
   </div>
 </template>
 
@@ -39,7 +53,7 @@ export default {
 .logo {
   max-width: 240px;
 }
-.auth_form{
+.auth_form {
   font-weight: 300;
   position: relative;
 }
@@ -83,42 +97,42 @@ export default {
   color: #f55123;
 }
 .auth_input:-webkit-autofill {
-    -webkit-box-shadow:0 0 0 50px white inset; /* Change the color to your own background color */
-    -webkit-text-fill-color: #000;
+  -webkit-box-shadow: 0 0 0 50px white inset; /* Change the color to your own background color */
+  -webkit-text-fill-color: #000;
 }
 
 .auth_input:-webkit-autofill:focus {
-    -webkit-box-shadow: 0 0 0 50px white inset;/*your box-shadow*/
-    -webkit-text-fill-color: #000;
+  -webkit-box-shadow: 0 0 0 50px white inset; /*your box-shadow*/
+  -webkit-text-fill-color: #000;
 }
-.button-link{
-  color: #FF5A7B;
-  text-decoration: underline #FF5A7B;
+.button-link {
+  color: #ff5a7b;
+  text-decoration: underline #ff5a7b;
   border: none;
   font-size: 28px;
   line-height: 32px;
   background-color: transparent;
 }
-.link_grey{
+.link_grey {
   color: #838383;
   font-size: 28px;
   line-height: 32px;
 }
-.link{
+.link {
   color: #000;
   font-size: 28px;
   line-height: 32px;
 }
-.link:hover{
+.link:hover {
   color: #3d3d3d;
-  text-decoration-color:#3d3d3d;
+  text-decoration-color: #3d3d3d;
 }
-.link_grey:hover{
+.link_grey:hover {
   color: #696969;
   text-decoration-color: #696969;
 }
-.about{
-  position:absolute;
+.about {
+  position: absolute;
   bottom: 5vh;
 }
 </style>
