@@ -1,6 +1,6 @@
 <template>
   <div class="container-fluid">
-    <div class="w-100 py-3 ps-4">
+    <div class="w-100 py-3 ps-sm-4">
       <img class="logo" src="~/assets/logo.svg" />
     </div>
     <Nuxt/>

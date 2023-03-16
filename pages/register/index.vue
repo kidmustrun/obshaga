@@ -206,4 +206,10 @@ export default {
   color: #696969;
   text-decoration-color: #696969;
 }
+@media screen and (max-width: 577px) {
+  .link_grey,
+  .link {
+    font-size: 24px;
+  }
+}
 </style>

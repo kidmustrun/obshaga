@@ -33,14 +33,14 @@
 </div>
     <div class="d-flex justify-content-around">
       <NuxtLink class="link_grey" to="/register">назад</NuxtLink>
-      <NuxtLink class="link" to="/register/search">вперед</NuxtLink>
+      <NuxtLink class="link" to="/register/personal">вперед</NuxtLink>
     </div>
   </div>
 </template>
 
 <script>
 export default {
-  name: 'RegisterSearchPage',
+  name: 'RegisterPersonalPage',
   layout: 'register',
   data() {
     return {
@@ -150,5 +150,11 @@ select::-ms-expand {
 .link_grey:hover {
   color: #696969;
   text-decoration-color: #696969;
+}
+@media screen and (max-width: 577px) {
+  .link_grey,
+  .link {
+    font-size: 24px;
+  }
 }
 </style>
