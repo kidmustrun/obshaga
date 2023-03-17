@@ -43,7 +43,7 @@
 
 <script>
 export default {
-  name: 'AuthPage',
+  name: 'AuthPage'
 }
 </script>
 <style scoped>

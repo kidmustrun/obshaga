@@ -1,8 +1,5 @@
 <template>
   <div class="container-fluid">
-    <div class="w-100 py-3 ps-md-4">
-      <img class="logo" src="~/assets/logo.svg" />
-    </div>
     <NuxtLink class="arrow_grey ms-md-4 nuxtlink" to="/auth"><span class="link_grey nuxtlink">назад</span></NuxtLink>
     <div class="container py-3">
     <p>Привет! 🙂</p>
@@ -74,6 +71,7 @@
 <script>
 export default {
   name: 'AuthAboutPage',
+  layout: 'register'
 }
 </script>
 <style scoped>

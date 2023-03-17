@@ -1,7 +1,7 @@
 <template>
   <div class="container-fluid">
     <div class="w-100 py-3 ps-sm-4">
-      <img class="logo" src="~/assets/logo.svg" />
+      <NuxtLink to="/auth"><img class="logo" src="~/assets/logo.svg" /></NuxtLink>
     </div>
     <Nuxt/>
   </div>
