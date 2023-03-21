@@ -9,11 +9,15 @@
       <NuxtLink to="/"><img class="logo" src="~/assets/logo.svg" /></NuxtLink>
       <v-spacer></v-spacer>
 
-      <NuxtLink to="/feed" class="d-md-inline-block d-none me-3">Лента </NuxtLink>
+      <NuxtLink to="/feed" class="d-md-inline-block d-none me-3"
+        >Лента
+      </NuxtLink>
       <NuxtLink to="/" class="d-md-inline-block d-none me-3"
         >Мои симпатии
       </NuxtLink>
-      <NuxtLink to="/profile" class="d-md-inline-block d-none me-3 ">Профиль </NuxtLink>
+      <NuxtLink to="/profile" class="d-md-inline-block d-none me-3"
+        >Профиль
+      </NuxtLink>
       <NuxtLink to="/about" class="d-md-inline-block d-none me-3"
         >О приложении
       </NuxtLink>
@@ -67,12 +71,12 @@ export default {
 .logo {
   height: 56px;
 }
-a{
+a {
   text-decoration: none;
   color: #000;
 }
-.nuxt-link-active {
-  color: #FF5A7B;
+.nuxt-link-exact-active {
+  color: #ff5a7b;
   font-weight: 600;
 }
 </style>
