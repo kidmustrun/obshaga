@@ -18,7 +18,7 @@
         /></v-avatar>
       </div>
       <div class="col-md-9 order-lg-1 order-last">
-        <div class="name mb-2">{{ name }} {{ surname }}, {{ date }}</div>
+        <div class="name mb-2">{{ name }} {{ surname }}, {{ date }} <span v-if="unread" class="unread">●</span></div>
         <div class="about mb-2">{{ about }}</div>
         <div class="mb-2">
           <v-icon left>mdi-school</v-icon>{{ faculty }}, {{ course }} курс
@@ -87,7 +87,7 @@ export default {
     'course',
     'faculty',
     'filters',
-    'favorite',
+    'favorite','unread',
   ],
 }
 </script>
@@ -106,6 +106,9 @@ export default {
 .heart {
   color: #ff5a7b;
   cursor: pointer;
+}
+.unread{
+  color: #ff5a7b;
 }
 .btn_chat, .btn_close {
   box-sizing: border-box;

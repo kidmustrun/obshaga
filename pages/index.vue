@@ -10,10 +10,9 @@
           <v-list>
             <v-list-item v-for="filter in filters" :key="filter.id">
               <v-list-item-title
-                :class="{ active: filter.isActive }"
-                class="filter"
+                class="filter d-flex justify-content-between"
                 @click="makeFilterActive(filter)"
-                >{{ filter.title }}</v-list-item-title
+                ><span  :class="{ active: filter.isActive }" >{{ filter.title }}</span><span class="symbol">{{ filter.simbol }}</span></v-list-item-title
               >
             </v-list-item>
           </v-list>
@@ -32,6 +31,7 @@
           :faculty="user.faculty"
           :filters="user.filters"
           :favorite="user.favorite"
+          :unread="user.unread"
         />
       </div>
     </div>
@@ -69,6 +69,7 @@ export default {
           },
         ],
         favorite: false,
+        unread: true
       },
     ],
     filters: [
@@ -79,12 +80,14 @@ export default {
       },
       {
         id: 2,
-        title: 'Непрочитанные',
+        title: 'Непрочитанныеㅤ',
+        simbol: '●',
         isActive: false,
       },
       {
         id: 3,
         title: 'Избранные',
+        simbol: '❤',
         isActive: false,
       },
     ],
@@ -119,5 +122,8 @@ h1 {
 }
 .active {
   text-decoration-line: underline;
+}
+.symbol{
+  color: #ff5a7b;
 }
 </style>
