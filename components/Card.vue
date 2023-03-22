@@ -1,6 +1,6 @@
 <template>
   <div data-app>
-    <v-card elevation="1" class="row p-3">
+    <v-card elevation="1" class="row p-3 mb-5">
       <div class="col-md-2 text-center col-11">
         <v-avatar
           class="ratio ratio-1x1"
@@ -56,7 +56,7 @@
             @mouseover="upBtnClose = true"
             @mouseleave="upBtnClose = false"
           >
-            <v-icon> mdi-close </v-icon><span v-if="upBtnClose">  закрыть</span
+            <v-icon> mdi-close </v-icon><span v-if="upBtnClose">  удалить</span
             >
           </v-btn>
         </div>

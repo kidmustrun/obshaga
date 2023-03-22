@@ -1,9 +1,7 @@
 <template>
   <div class="app">
     <Header></Header>
-    <div class="container-fluid">
       <Nuxt />
-    </div>
   </div>
 </template>
 
@@ -14,8 +12,13 @@
   margin: 0;
   padding: 0;
   overflow: auto !important;
+  box-sizing: border-box;
 }
 html{
     overflow: auto !important;
+}
+.v-navigation-drawer__content {
+  height: calc(100vh - 64px) !important;
+  z-index: 1000 !important;
 }
 </style>
