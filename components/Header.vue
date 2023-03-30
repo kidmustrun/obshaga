@@ -1,6 +1,6 @@
 <template>
   <div data-app>
-    <v-app-bar class="header" elevation="0">
+    <v-app-bar class="header position-fixed">
       <v-app-bar-nav-icon
         class="d-md-none d-block"
         @click="drawer = true"
@@ -67,6 +67,7 @@ export default {
 .header {
   background-color: #fff !important;
   box-shadow: none !important;
+  z-index: 1000000 !important;
 }
 .logo {
   height: 56px;

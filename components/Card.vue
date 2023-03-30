@@ -1,6 +1,7 @@
 <template>
   <div data-app>
-    <v-card elevation="1" class="row p-3 mb-5">
+    <v-card elevation="1" class="mb-5">
+      <div class="row p-3">
       <div class="col-md-2 text-center col-11">
         <v-avatar
           class="ratio ratio-1x1"
@@ -65,6 +66,7 @@
         <v-icon v-if="favorite" class="heart">mdi-heart</v-icon>
         <v-icon v-else class="heart">mdi-heart-outline</v-icon>
       </div>
+    </div>
     </v-card>
   </div>
 </template>

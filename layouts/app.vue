@@ -1,8 +1,10 @@
 <template>
-  <div class="app">
+  <div class="app" id="app">
     <Header></Header>
+    <div class="root">
       <Nuxt />
   </div>
+</div>
 </template>
 
 <style>
@@ -14,6 +16,9 @@
   overflow: auto !important;
   box-sizing: border-box;
 }
+.root{
+  padding-top: 64px;
+}
 html{
     overflow: auto !important;
 }
@@ -21,4 +26,7 @@ html{
   height: calc(100vh - 64px) !important;
   z-index: 1000 !important;
 }
+.v-list-item--active  .v-list-item__subtitle{
+  color: #ffffff !important;
+} 
 </style>

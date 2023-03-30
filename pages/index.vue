@@ -14,14 +14,14 @@
     </button>
     <v-navigation-drawer v-model="chatOpen" absolute class="chat_panel">
       <v-list nav dense>
-        <v-list-item-group
+        <v-list-item-group active-class="chat_user_opened"
         >
           <v-list-item v-for="user in users" :key="user.id" two-line class="mx-auto">
             <v-list-item-avatar>
               <v-img :src="user.photo_url"></v-img>
             </v-list-item-avatar>
             <v-list-item-content class="ms-2">
-              <v-list-item-title>{{ user.name }} {{ user.surname }}, {{ user.date }}</v-list-item-title>
+              <v-list-item-title>{{ user.name }} {{ user.surname }}, {{ user.date }} <span v-if="user.unread" class="unread">●</span></v-list-item-title>
             <v-list-item-subtitle>Lorem ipsum dolor sit amet consectetur adipisicing elit. Inventore perferendis ipsam, odit provident velit consectetur, quam sint maiores illum ducimus illo, alias praesentium quia neque! Totam molestias error, ea soluta similique nam libero numquam blanditiis laboriosam deserunt! Eveniet minima doloremque neque facilis beatae dolorem, error distinctio et? Voluptates, minus veritatis! Enim dolores pariatur error, tenetur doloribus sunt ab nisi dolorum earum laudantium impedit perspiciatis praesentium et ut officia odio doloremque voluptas soluta quam molestias iste eius repellat? Asperiores provident minus atque iste? Eos a minima eveniet fugiat expedita magni sint ut maiores totam? Possimus voluptatum optio dolores ad fugiat nobis?</v-list-item-subtitle>
           </v-list-item-content>
            
@@ -52,7 +52,7 @@
           </v-list>
         </v-menu>
       </div>
-      <div class="pt-4">
+      <div class="pt-4 p-3">
         <Card
           v-for="user in users"
           :key="user.id"
@@ -184,7 +184,7 @@ h1 {
 .active {
   text-decoration-line: underline;
 }
-.symbol {
+.symbol, .unread {
   color: #ff5a7b;
 }
 .chat_btn {
@@ -210,6 +210,10 @@ h1 {
 .chat_icon {
   color: #ffffff !important;
   font-size: 32px !important;
+}
+.chat_user_opened{
+  background-color: #FF5A7B;
+  color: #ffffff !important;
 }
 
 </style>
