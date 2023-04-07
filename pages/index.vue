@@ -60,16 +60,23 @@
           </v-list-item-group>
         </v-list>
       </v-navigation-drawer>
-      <div v-show="openUserChat" class="openUserChat p-4" id="chat">
-        <button
-          @click="
-            chatOpen = true
-            openUserChat = false
-          "
-          class="d-block button_link"
-        >
-          Назад
-        </button>
+      <div
+        v-if="openUserChat"
+        class="openUserChat p-4"
+        id="chat"
+      >
+        <div class="position-fixed fixed-top button p-2">
+          <button
+            @click="
+              chatOpen = true
+              openUserChat = false
+            "
+            class="d-block button_link"
+          >
+            Назад
+          </button>
+        </div>
+        <div class="messages">
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime dolore
         similique in, minus, alias quaerat delectus quibusdam sed assumenda odio
         distinctio, et eius perferendis nesciunt. Molestias eveniet nihil neque
@@ -179,10 +186,13 @@
         voluptatem hic accusantium quis necessitatibus libero illum soluta ea
         sit fugit quo inventore! Blanditiis neque suscipit eos, corrupti
         praesentium quisquam voluptatem error commodi vitae quo. Pariatur.
-        <input v-model="chat" class="form-control" />
+      </div>
+        <div class="position-fixed fixed-bottom input-message" >
+          <input v-model="chat" class="form-control" />
+        </div>
       </div>
     </div>
-    <div class="container">
+    <div class="container" v-if="!openUserChat">
       <div class="d-flex justify-content-between align-items-center">
         <h1>Мои симпатии</h1>
         <v-menu offset-y>
@@ -335,7 +345,6 @@ export default {
       const el = this.$el.querySelector('#chat')
       if (el) {
         el.scrollTop = el.scrollHeight
-    
       }
     },
   },
@@ -400,18 +409,30 @@ h1 {
 .openUserChat {
   position: absolute;
   left: 256px;
+  top: 0;
   z-index: 1000;
   background-color: #f5f5f5;
   height: calc(100vh - 64px) !important;
   overflow: auto;
 }
+.button {
+  top: 64px;
+  left: 256px;
+  background-color: #f5f5f5;
+}
 
 .button_link {
   font-weight: 600;
 }
-
+.messages{
+  margin-top: 32px;
+  margin-bottom: 32px;
+}
+.input-message{
+  left: 256px;
+}
 @media screen and (max-width: 768px) {
-  .openUserChat {
+  .openUserChat, .button, .input-message {
     left: 0;
   }
 }
