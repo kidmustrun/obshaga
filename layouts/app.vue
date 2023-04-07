@@ -29,4 +29,7 @@ html{
 .v-list-item--active  .v-list-item__subtitle{
   color: #ffffff !important;
 } 
+.v-overlay{
+  z-index: 5 !important;
+}
 </style>

@@ -68,6 +68,7 @@ export default {
   background-color: #fff !important;
   box-shadow: none !important;
   z-index: 1000000 !important;
+  height: 64px !important;
 }
 .logo {
   height: 56px;
