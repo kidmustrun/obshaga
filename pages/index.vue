@@ -14,6 +14,7 @@
     </button>
     <div class="w-100">
       <v-navigation-drawer
+        ref="menu"
         v-model="chatOpen"
         absolute
         class="chat_panel"
@@ -59,8 +60,16 @@
           </v-list-item-group>
         </v-list>
       </v-navigation-drawer>
-      <div v-if="openUserChat" class="openUserChat p-4">
-        <button @click="chatOpen = true;  openUserChat = false" class="d-block button_link">Назад</button>
+      <div v-show="openUserChat" class="openUserChat p-4" id="chat">
+        <button
+          @click="
+            chatOpen = true
+            openUserChat = false
+          "
+          class="d-block button_link"
+        >
+          Назад
+        </button>
         Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime dolore
         similique in, minus, alias quaerat delectus quibusdam sed assumenda odio
         distinctio, et eius perferendis nesciunt. Molestias eveniet nihil neque
@@ -170,6 +179,7 @@
         voluptatem hic accusantium quis necessitatibus libero illum soluta ea
         sit fugit quo inventore! Blanditiis neque suscipit eos, corrupti
         praesentium quisquam voluptatem error commodi vitae quo. Pariatur.
+        <input v-model="chat" class="form-control" />
       </div>
     </div>
     <div class="container">
@@ -216,7 +226,6 @@
 </template>
 
 <script>
-
 export default {
   name: 'IndexPage',
   layout: 'app',
@@ -300,10 +309,10 @@ export default {
     messages: [],
     openUserChat: false,
     width: 0,
+    chat: '',
   }),
   created() {
-    if (process.browser)
-    window.addEventListener('resize', this.updateWidth)
+    if (process.browser) window.addEventListener('resize', this.updateWidth)
   },
   methods: {
     makeFilterActive(filter) {
@@ -314,14 +323,25 @@ export default {
       this.filters.find((item) => item.id === filter.id).isActive = true
     },
     updateWidth() {
-      this.width = window.innerWidth;
-      if(this.openUserChat && this.width>768)
-      this.chatOpen = true;
+      this.width = window.innerWidth
+      if (this.openUserChat && this.width > 768) this.chatOpen = true
     },
     openUserChatMethod(id) {
       this.messages = this.users.find((user) => user.id === id).messages
       this.openUserChat = true
       if (this.width <= 768) this.chatOpen = false
+    },
+    scrollToDown() {
+      const el = this.$el.querySelector('#chat')
+      if (el) {
+        el.scrollTop = el.scrollHeight
+    
+      }
+    },
+  },
+  watch: {
+    openUserChat() {
+      setTimeout(this.scrollToDown, 10)
     },
   },
 }
@@ -386,7 +406,7 @@ h1 {
   overflow: auto;
 }
 
-.button_link{
+.button_link {
   font-weight: 600;
 }
 
