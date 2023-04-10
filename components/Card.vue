@@ -50,6 +50,7 @@
               :class="{ button_active: upBtnChat }"
               @mouseover="upBtnChat = true"
               @mouseleave="upBtnChat = false"
+              @click="openChat"
             >
               <span v-if="upBtnChat">написать </span
               ><v-icon> mdi-forum-outline </v-icon>
@@ -86,6 +87,7 @@ export default {
     }
   },
   props: [
+    'id',
     'src',
     'name',
     'surname',
@@ -97,6 +99,11 @@ export default {
     'favorite',
     'unread',
   ],
+  methods: {
+    openChat(){
+      this.$emit('openParentChat', this.id)
+    }
+  }
 }
 </script>
 <style scoped>

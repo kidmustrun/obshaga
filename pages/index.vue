@@ -22,12 +22,13 @@
         stateless
       >
         <v-list nav dense>
-          <v-list-item-group active-class="chat_user_opened">
+          <v-list-item-group>
             <v-list-item
               v-for="user in users"
               :key="user.id"
               two-line
               class="mx-auto"
+              :class="{chat_user_opened: userOpened.id === user.id}"
               @click="openUserChatMethod(user.id)"
             >
               <v-list-item-avatar>
@@ -40,7 +41,7 @@
                     >●</span
                   ></v-list-item-title
                 >
-                <v-list-item-subtitle
+                <v-list-item-subtitle :style="[(userOpened.id === user.id) ? {color: '#fff'} : {color: '#000'}]"
                   >Lorem ipsum dolor sit amet consectetur adipisicing elit.
                   Inventore perferendis ipsam, odit provident velit consectetur,
                   quam sint maiores illum ducimus illo, alias praesentium quia
@@ -60,16 +61,13 @@
           </v-list-item-group>
         </v-list>
       </v-navigation-drawer>
-      <div
-        v-if="openUserChat"
-        class="openUserChat p-4"
-        id="chat"
-      >
+      <div v-if="openUserChat" class="openUserChat p-4" id="chat">
         <div class="position-fixed fixed-top button p-2">
           <button
             @click="
-              chatOpen = true
-              openUserChat = false
+              chatOpen = true;
+              openUserChat = false;
+              userOpened = {id: -1};
             "
             class="d-block button_link"
           >
@@ -77,9 +75,12 @@
           </button>
         </div>
         <div class="messages">
-        <Message :src="user.photo_url" :message="'Lorem ipsumfb afjsfhusa jfbjsakf sdfsfaf sahdghasfgahgsf fdgasf fhf hdfghasfi dfhbhjfd hfd fhfsagfa'"/>
-      </div>
-        <div class="position-fixed fixed-bottom input-message" >
+          <Message
+            :src="userOpened.photo_url"
+            :message="'Lorem ipsumfb afjsfhusa jfbjsakf sdfsfaf sahdghasfgahgsf fdgasf fhf hdfghasfi dfhbhjfd hfd fhfsagfa'"
+          />
+        </div>
+        <div class="position-fixed fixed-bottom input-message">
           <input v-model="chat" class="form-control" />
         </div>
       </div>
@@ -111,6 +112,7 @@
         <Card
           v-for="user in users"
           :key="user.id"
+          :id="user.id"
           :src="user.photo_url"
           :name="user.name"
           :surname="user.surname"
@@ -121,6 +123,7 @@
           :filters="user.filters"
           :favorite="user.favorite"
           :unread="user.unread"
+          @openParentChat="openUserChatMethod"
         />
       </div>
     </div>
@@ -212,7 +215,7 @@ export default {
     openUserChat: false,
     width: 0,
     chat: '',
-    user:{},
+    userOpened: {},
   }),
   created() {
     if (process.browser) window.addEventListener('resize', this.updateWidth)
@@ -230,11 +233,12 @@ export default {
       if (this.openUserChat && this.width > 768) this.chatOpen = true
     },
     openUserChatMethod(id) {
-      this.user = this.users.find((user) => user.id === id)
-      this.messages = this.user.messages;
+      this.userOpened = this.users.find((user) => user.id === id)
+      // this.messages = this.user.messages;
       this.openUserChat = true;
-      if (this.width <= 768) this.chatOpen = false;
-      
+      this.updateWidth()
+      if (this.width <= 768) this.chatOpen = false
+      else this.chatOpen = true;
     },
     scrollToDown() {
       const el = this.$el.querySelector('#chat')
@@ -309,7 +313,7 @@ h1 {
   background-color: #f5f5f5;
   height: calc(100vh - 64px) !important;
   overflow: auto;
-  width: calc(100% - 256px)
+  width: calc(100% - 256px);
 }
 .button {
   top: 64px;
@@ -320,18 +324,20 @@ h1 {
 .button_link {
   font-weight: 600;
 }
-.messages{
+.messages {
   margin-top: 16px;
   margin-bottom: 32px;
 }
-.input-message{
+.input-message {
   left: 256px;
 }
 @media screen and (max-width: 768px) {
-  .openUserChat, .button, .input-message {
+  .openUserChat,
+  .button,
+  .input-message {
     left: 0;
   }
-  .openUserChat{
+  .openUserChat {
     width: 100%;
   }
 }

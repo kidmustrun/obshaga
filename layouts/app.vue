@@ -27,7 +27,7 @@ html{
   z-index: 1000 !important;
 }
 .v-list-item--active  .v-list-item__subtitle{
-  color: #ffffff !important;
+  color: #ffffff;
 } 
 .v-overlay{
   z-index: 5 !important;
