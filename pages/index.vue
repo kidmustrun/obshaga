@@ -28,7 +28,7 @@
               :key="user.id"
               two-line
               class="mx-auto"
-              :class="{chat_user_opened: userOpened.id === user.id}"
+              :class="{ chat_user_opened: userOpened.id === user.id }"
               @click="openUserChatMethod(user.id)"
             >
               <v-list-item-avatar>
@@ -41,7 +41,12 @@
                     >●</span
                   ></v-list-item-title
                 >
-                <v-list-item-subtitle :style="[(userOpened.id === user.id) ? {color: '#fff'} : {color: '#000'}]"
+                <v-list-item-subtitle
+                  :style="[
+                    userOpened.id === user.id
+                      ? { color: '#fff' }
+                      : { color: '#000' },
+                  ]"
                   >Lorem ipsum dolor sit amet consectetur adipisicing elit.
                   Inventore perferendis ipsam, odit provident velit consectetur,
                   quam sint maiores illum ducimus illo, alias praesentium quia
@@ -65,9 +70,9 @@
         <div class="position-fixed fixed-top button p-2">
           <button
             @click="
-              chatOpen = true;
-              openUserChat = false;
-              userOpened = {id: -1};
+              chatOpen = true
+              openUserChat = false
+              userOpened = { id: -1 }
             "
             class="d-block button_link"
           >
@@ -80,8 +85,13 @@
             :message="'Lorem ipsumfb afjsfhusa jfbjsakf sdfsfaf sahdghasfgahgsf fdgasf fhf hdfghasfi dfhbhjfd hfd fhfsagfa'"
           />
         </div>
-        <div class="position-fixed fixed-bottom input-message">
-          <input v-model="chat" class="form-control" />
+        <div class="position-fixed fixed-bottom input-message py-4 px-5">
+          <input
+            v-model="chat"
+            class="input_chat p-3"
+            placeholder="Напишите сообщение..."
+          />
+          <button class="button_send"><img src="~/assets/arrow_send.svg"></button>
         </div>
       </div>
     </div>
@@ -235,10 +245,10 @@ export default {
     openUserChatMethod(id) {
       this.userOpened = this.users.find((user) => user.id === id)
       // this.messages = this.user.messages;
-      this.openUserChat = true;
+      this.openUserChat = true
       this.updateWidth()
       if (this.width <= 768) this.chatOpen = false
-      else this.chatOpen = true;
+      else this.chatOpen = true
     },
     scrollToDown() {
       const el = this.$el.querySelector('#chat')
@@ -330,6 +340,23 @@ h1 {
 }
 .input-message {
   left: 256px;
+}
+.button_send {
+  position: absolute;
+  right: 70px;
+  bottom: 25%;
+}
+.button_send img{
+  width: 50px;
+}
+.input_chat {
+position: relative;
+  background: #ffffff;
+  border-radius: 10px;
+  width: 100%;
+}
+.input_chat:focus{
+  outline:#ddd 1px solid;
 }
 @media screen and (max-width: 768px) {
   .openUserChat,
