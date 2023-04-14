@@ -29,16 +29,18 @@
           </v-file-input>
         </div>
         <div class="col-md-8 offset-lg-1">
-          <span class="big_text">Ирина Громова</span>
+          <span class="big_text">{{ user.name }} {{ user.surname }}</span>
           <br />
           <v-icon left> mdi-account </v-icon>
-          <v-chip style="background-color: #ff5a7b; color: #fff" small
-            >женский</v-chip
+          <v-chip v-if="this.user.gender === 'female'" style="background-color: #ff5a7b; color: #fff" small>женский</v-chip
+          >
+          <v-chip v-if="this.user.gender === 'male'" style="background-color: #A35AFF; color: #fff" small>мужской</v-chip
           ><br />
-          <span><v-icon left>mdi-calendar</v-icon>13.01.2002</span><br />
+          <span><v-icon left>mdi-calendar</v-icon>{{ user.birthday }}</span
+          ><br />
           <span>
-            <v-icon left>mdi-school</v-icon>информационные технологии,
-            веб-технологии, 4 курс
+            <v-icon left>mdi-school</v-icon>{{ user.faculty }}, веб-технологии,
+            {{ user.course }} курс
           </span>
 
           <v-card>
@@ -47,14 +49,17 @@
               solo
               clearable
               auto-grow
+              @change="setUserData"
               name="about_me"
               label="О себе..."
               class="mt-2"
+              v-model="about"
             >
             </v-textarea>
             <v-autocomplete
               v-model="values"
               :items="filters"
+              @change="setUserData"
               solo
               dense
               chips
@@ -117,6 +122,7 @@ export default {
   data: () => ({
     file: null,
     content: '',
+    about: '',
     filters: [
       {
         name: 'дружба',
@@ -131,9 +137,13 @@ export default {
         color: '#FF5A7B',
       },
     ],
-    values: ['помощь по учёбе'],
+    values: [],
     value: null,
   }),
+  created() {
+    if(this.user.search) this.values = [this.user.search]
+    this.setUserData()
+  },
   methods: {
     remove(item) {
       const index = this.values.indexOf(item.name)
@@ -143,21 +153,31 @@ export default {
       let reader = new FileReader()
       reader.onload = this.onImageLoad
       reader.readAsDataURL(this.file)
+      this.setUserData()
     },
     previewThumbnail(e) {
-      if (this.file) this.selectImage(this.file)
-      else this.content = require('~/assets/no_photo.svg')
+      if (this.file) {
+        this.selectImage(this.file)
+    
+      } else this.content = require('~/assets/no_photo.svg')
     },
     onImageLoad(e) {
       this.content = e.target.result
       let filename = this.file instanceof File ? this.file.name : ''
-      // Dispatch new input event with filename
       this.$emit('input', filename)
-      // Dispatch new event with image content
       this.$emit('image-changed', this.content)
+    },
+    setUserData() {
+      this.user.file = this.file
+      this.user.about = this.about
+      this.user.search = this.values
+      this.$store.commit('SET_USER', this.user)
     },
   },
   computed: {
+    user() {
+      return this.$store.state.user
+    },
     src() {
       if (this.content) {
         return this.content

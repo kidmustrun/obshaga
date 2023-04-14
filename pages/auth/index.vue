@@ -10,6 +10,7 @@
           type="text"
           id="login"
           name="login"
+          v-model="login"
           required
           readonly
           onfocus="this.removeAttribute('readonly')"
@@ -23,6 +24,7 @@
           type="password"
           id="password"
           name="password"
+          v-model="password"
           required
           readonly
           onfocus="this.removeAttribute('readonly')"
@@ -31,7 +33,7 @@
         <span class="error-label"></span>
       </div>
       <div class="mt-3">
-        <button class="button-link">войти</button>
+        <button class="button-link" @click="sendLogin">войти</button>
       </div>
       <div class="mt-2">
         <NuxtLink class="link" to="/register">зарегистрироваться</NuxtLink>
@@ -43,8 +45,23 @@
 
 <script>
 export default {
-  name: 'AuthPage'
-}
+  name: 'AuthPage',
+  data() {
+    return {
+      login: '',
+      password: '',
+    }
+  },
+  methods: {
+    sendLogin(){
+      this.$store.dispatch('login', {
+        login: this.login,
+        password: this.password,
+        remember: true,
+      })
+    },
+    }
+  }
 </script>
 <style scoped>
 .container-fluid {

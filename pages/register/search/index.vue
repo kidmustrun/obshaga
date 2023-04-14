@@ -1,39 +1,49 @@
 <template>
   <div class="">
     <div class="ps-4 search_form d-flex justify-content-around flex-column">
-        <div class="">
-    <span>Заполни параметры поиска.</span>
-    <br>
-    <br>
-    <p>Информацию в дальнейшем можно будет изменить.</p>
-</div>
-<div class="">
-    <span>Я </span
-    ><select
-      :style="[gender == 'male' ? { color: '#5a60ff' } : { color: '#ff5a7b' }]"
-      @change="resizeWidth($event)"
-      v-model="gender"
-      class="select_gender"
-    >
-      <option value="male" >парень</option>
-      <option value="female" selected>девушка</option>
-    </select>
-    <span>, ищу </span>
-    <select
-      :style="[search != 'friendship' ? search == 'help' ? { color: '#A35AFF' } : { color: '#ff5a7b' } : {color: '#FF9F5A'}]"
-      @change="resizeWidth($event)"
-      v-model="search"
-      class="select_search"
-    >
-      <option value="friendship" >дружбу</option>
-      <option value="help" selected>помощь по учёбе</option>
-      <option value="love" selected>любовь</option>
-    </select>
-</div>
-</div>
+      <div class="">
+        <span>Заполни параметры поиска.</span>
+        <br />
+        <br />
+        <p>
+          Информацию в дальнейшем можно будет изменить.
+        </p>
+      </div>
+      <div class="">
+        <span>Я </span
+        ><select
+          :style="[
+            gender == 'male' ? { color: '#5a60ff' } : { color: '#ff5a7b' },
+          ]"
+          @change="resizeWidth($event)"
+          v-model="gender"
+          class="select_gender"
+        >
+          <option value="male">парень</option>
+          <option value="female" selected>девушка</option>
+        </select>
+        <span>, ищу </span>
+        <select
+          :style="[
+            search != 'дружба'
+              ? search == 'помощь по учёбе'
+                ? { color: '#A35AFF' }
+                : { color: '#ff5a7b' }
+              : { color: '#FF9F5A' },
+          ]"
+          @change="resizeWidth($event)"
+          v-model="search"
+          class="select_search"
+        >
+          <option value="дружба">дружбу</option>
+          <option value="помощь по учёбе" selected>помощь по учёбе</option>
+          <option value="любовь" selected>любовь</option>
+        </select>
+      </div>
+    </div>
     <div class="d-flex justify-content-around">
       <NuxtLink class="link_grey" to="/register">назад</NuxtLink>
-      <NuxtLink class="link" to="/register/personal">вперед</NuxtLink>
+      <button @click="toPersonal" class="link" to="/register/personal">вперед</button>
     </div>
   </div>
 </template>
@@ -45,13 +55,26 @@ export default {
   data() {
     return {
       gender: 'female',
-      search: 'help'
+      search: 'помощь по учёбе',
+      warning: false
     }
+  },
+  computed: {
+    user() {
+      return this.$store.state.user
+    },
+  },
+  created() {
+    if(this.user.gender) this.gender = this.user.gender;
+    if(this.user.search && Array.isArray(this.user.search)) this.search = this.user.search[0];
+    delete this.user.about;
+    delete this.user.file;
+    this.setUserData()
   },
   methods: {
     resizeWidth(event) {
       let inputText =
-        event.target.options[event.target.options.selectedIndex].innerHTML
+      event.target.options[event.target.options.selectedIndex].innerHTML
       let font = '28px gilroy'
       let canvas = document.createElement('canvas')
       let context = canvas.getContext('2d')
@@ -59,7 +82,17 @@ export default {
       let width = context.measureText(inputText).width
       let formattedWidth = Math.ceil(width) + 'px'
       event.target.style.width = formattedWidth
+      this.setUserData()
     },
+    setUserData() {
+      this.user.gender = this.gender;
+      this.user.search = this.search;
+      this.$store.commit('SET_USER', this.user)
+    },
+    toPersonal(){
+      if(Object.values(this.user).every((item) => item != '')) this.$nuxt.$options.router.push('/register/personal')
+      else this.warning = true;
+    }
   },
 }
 </script>
@@ -68,8 +101,8 @@ span {
   font-size: 28px;
   line-height: 32px;
 }
-.search_form{
-    height: 70vh
+.search_form {
+  height: 70vh;
 }
 select {
   border: none;
@@ -112,7 +145,7 @@ select::-ms-expand {
 .select_search option:first-child:checked,
 .select_search option:first-child:focus {
   background-color: transparent !important;
-  color: #FF9F5A !important;
+  color: #ff9f5a !important;
 }
 
 .select_search option:nth-child(2),
@@ -121,7 +154,7 @@ select::-ms-expand {
 .select_search option:nth-child(2):checked,
 .select_search option:nth-child(2):focus {
   background-color: transparent !important;
-  color: #A35AFF !important;
+  color: #a35aff !important;
 }
 
 .select_search option:last-child,
@@ -130,7 +163,7 @@ select::-ms-expand {
 .select_search option:last-child:checked,
 .select_search option:last-child:focus {
   background-color: transparent !important;
-  color: #FF5A7B !important;
+  color: #ff5a7b !important;
 }
 .link_grey {
   color: #838383;

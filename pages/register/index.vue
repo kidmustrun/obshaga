@@ -1,135 +1,197 @@
 <template>
   <div class="">
     <div class="row">
-      <div class="col-md d-md-flex d-none justify-content-center flex-column align-items-center">
+      <div
+        class="col-md d-md-flex d-none justify-content-center flex-column align-items-center"
+      >
         <img class="register_img" src="~/assets/register.svg" />
       </div>
       <div class="col-md d-flex justify-content-center">
         <div class="auth_form_container">
-        <div class="auth_form">
-          <input
-            class="auth_input"
-            type="text"
-            id="name"
-            name="name"
-            required
-            readonly
-            onfocus="this.removeAttribute('readonly')"
-          />
-          <span class="floating-label">имя</span>
-          <span class="error-label"></span>
-        </div>
-        <div class="auth_form">
-          <input
-            class="auth_input"
-            type="text"
-            id="surname"
-            name="surname"
-            required
-            readonly
-            onfocus="this.removeAttribute('readonly')"
-          />
-          <span class="floating-label">фамилия</span>
-          <span class="error-label"></span>
-        </div>
-        <div class="auth_form">
-          <input
-            class="auth_input"
-            type="text"
-            id="login"
-            name="login"
-            required
-            readonly
-            onfocus="this.removeAttribute('readonly')"
-          />
-          <span class="floating-label">логин</span>
-          <span class="error-label"></span>
-        </div>
-        <div class="auth_form">
-          <input
-            class="auth_input"
-            type="text"
-            id="birthday"
-            name="birthday"
-            required
-            onfocus="(this.type='date')"
-            onblur="if(!this.value)this.type='text'"
-          />
-          <span class="floating-label">дата рождения</span>
-          <span class="error-label"></span>
-        </div>
-        <div class="auth_form">
-          <select
-            class="auth_input"
-            type="text"
-            id="faculty"
-            name="faculty"
-            required
-          >
-          <option value="" disabled selected hidden></option>
-        <option>Информациооных технологий</option>
-        <option>2</option>
-        <option>3</option>
-        </select>
-          <span class="floating-label">факультет</span>
-          <span class="error-label"></span>
-        </div>
-        <div class="auth_form">
-          <select
-            class="auth_input"
-            type="text"
-            id="course"
-            name="course"
-            required
-          >
-          <option value="" disabled selected hidden></option>
-        <option>1</option>
-        <option>2</option>
-        <option>3</option>
-        <option>4</option>
-        <option>5</option>
-        <option>6</option>
-        </select>
-          <span class="floating-label">курс</span>
-          <span class="error-label"></span>
-        </div>
-        <div class="auth_form">
-          <input
-            class="auth_input"
-            type="password"
-            id="password"
-            name="password"
-            required
-            readonly
-            onfocus="this.removeAttribute('readonly')"
-          />
-          <span class="floating-label">пароль</span>
-          <span class="error-label"></span>
+          <div class="auth_form">
+            <input
+              v-model="name"
+              class="auth_input"
+              type="text"
+              id="name"
+              name="name"
+              @change="setUserData"
+              required
+              :readonly="name == ''"
+              onfocus="this.removeAttribute('readonly')"
+            />
+            <span class="floating-label">имя</span>
+            <span class="error-label"></span>
+          </div>
+          <div class="auth_form">
+            <input
+              v-model="surname"
+              class="auth_input"
+              type="text"
+              id="surname"
+              name="surname"
+              @change="setUserData"
+              required
+              readonly
+              :readonly="surname == ''"
+              onfocus="this.removeAttribute('readonly')"
+            />
+            <span class="floating-label">фамилия</span>
+            <span class="error-label"></span>
+          </div>
+          <div class="auth_form">
+            <input
+              v-model="login"
+              @change="setUserData"
+              class="auth_input"
+              type="text"
+              id="login"
+              name="login"
+              required
+              readonly
+              :readonly="login == ''"
+              onfocus="this.removeAttribute('readonly')"
+            />
+            <span class="floating-label">логин</span>
+            <span class="error-label"></span>
+          </div>
+          <div class="auth_form">
+            <input
+              v-model="birthday"
+              class="auth_input"
+              type="text"
+              id="birthday"
+              name="birthday"
+              @change="setUserData"
+              required
+              onfocus="(this.type='date')"
+              onblur="if(!this.value)this.type='text'"
+            />
+            <span class="floating-label">дата рождения</span>
+            <span class="error-label"></span>
+          </div>
+          <div class="auth_form">
+            <select
+              v-model="faculty"
+              class="auth_input"
+              type="text"
+              id="faculty"
+              name="faculty"
+              @change="setUserData"
+              required
+            >
+              <option value="" disabled selected hidden></option>
+              <option>Информационных технологий</option>
+              <option>2</option>
+              <option>3</option>
+            </select>
+            <span class="floating-label">факультет</span>
+            <span class="error-label"></span>
+          </div>
+          <div class="auth_form">
+            <select
+              v-model="course"
+              class="auth_input"
+              type="text"
+              id="course"
+              name="course"
+              @change="setUserData"
+              required
+            >
+              <option value="" disabled selected hidden></option>
+              <option>1</option>
+              <option>2</option>
+              <option>3</option>
+              <option>4</option>
+              <option>5</option>
+              <option>6</option>
+            </select>
+            <span class="floating-label">курс</span>
+            <span class="error-label"></span>
+          </div>
+          <div class="auth_form">
+            <input
+              class="auth_input"
+              type="password"
+              id="password"
+              name="password"
+              v-model="password"
+              required
+              readonly
+              @change="setUserData"
+              :readonly="password == ''"
+              onfocus="this.removeAttribute('readonly')"
+            />
+            <span class="floating-label">пароль</span>
+            <span class="error-label"></span>
+          </div>
         </div>
       </div>
     </div>
-  </div>
     <div class="d-flex justify-content-around">
       <NuxtLink class="link_grey" to="/auth">назад</NuxtLink>
-      <NuxtLink class="link" to="/register/search">вперед</NuxtLink>
+      <button @click="toSearch" class="link" >вперед</button>
     </div>
   </div>
 </template>
 
 <script>
-
 export default {
-  name: 'RegisterPage', layout: 'register'
+  name: 'RegisterPage',
+  layout: 'register',
+  data() {
+    return {
+      name: '',
+      surname: '',
+      login: '',
+      birthday: '',
+      faculty: '',
+      course: '',
+      password: '',
+      warning: false,
+    }
+  },
+  created() {
+    if (this.user.name) this.name = this.user.name
+    if (this.user.surname) this.surname = this.user.surname
+    if (this.user.login) this.login = this.user.login
+    if (this.user.birthday) this.birthday = this.user.birthday
+    if (this.user.faculty) this.faculty = this.user.faculty
+    if (this.user.course) this.course = this.user.course
+    if (this.user.password) this.password = this.user.password
+  },
+  computed: {
+    user() {
+      return this.$store.state.user
+    },
+  },
+  methods: {
+    toSearch(){
+      if(Object.values(this.user).every((item) => item != '')) this.$nuxt.$options.router.push('/register/search')
+      else this.warning = true;
+    },
+    setUserData() {
+      this.$store.commit('SET_USER', {
+        name: this.name,
+        surname: this.surname,
+        login: this.login,
+        birthday: this.birthday,
+        faculty: this.faculty,
+        course: this.course,
+        password: this.password,
+      })
+    },
+  },
 }
 </script>
 <style scoped>
 .logo {
   width: 150px;
 }
-.register_img{
+.register_img {
   width: 80%;
 }
-.auth_form_container{
+.auth_form_container {
   width: 80%;
 }
 .auth_form {
