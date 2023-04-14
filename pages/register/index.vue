@@ -130,7 +130,11 @@
     </div>
     <div class="d-flex justify-content-around">
       <NuxtLink class="link_grey" to="/auth">назад</NuxtLink>
-      <button @click="toSearch" class="link" >вперед</button>
+      <button @click="toSearch" class="link" :style="[
+                    warning
+                      ? { color: '#FF5A7B' }
+                      : { color: '#ddd' },
+                  ]">вперед</button>
     </div>
   </div>
 </template>
@@ -159,6 +163,8 @@ export default {
     if (this.user.faculty) this.faculty = this.user.faculty
     if (this.user.course) this.course = this.user.course
     if (this.user.password) this.password = this.user.password
+    if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.warning = true;
+      else this.warning = false;
   },
   computed: {
     user() {
@@ -167,7 +173,7 @@ export default {
   },
   methods: {
     toSearch(){
-      if(Object.values(this.user).every((item) => item != '')) this.$nuxt.$options.router.push('/register/search')
+      if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.$nuxt.$options.router.push('/register/search')
       else this.warning = true;
     },
     setUserData() {
@@ -180,6 +186,8 @@ export default {
         course: this.course,
         password: this.password,
       })
+      if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.warning = true;
+      else this.warning = false;
     },
   },
 }

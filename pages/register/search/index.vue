@@ -43,7 +43,11 @@
     </div>
     <div class="d-flex justify-content-around">
       <NuxtLink class="link_grey" to="/register">назад</NuxtLink>
-      <button @click="toPersonal" class="link" to="/register/personal">вперед</button>
+      <button @click="toPersonal" class="link" to="/register/personal" :style="[
+                    warning
+                      ? { color: '#FF5A7B' }
+                      : { color: '#ddd' },
+                  ]">вперед</button>
     </div>
   </div>
 </template>
@@ -88,6 +92,8 @@ export default {
       this.user.gender = this.gender;
       this.user.search = this.search;
       this.$store.commit('SET_USER', this.user)
+      if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.warning = true;
+      else this.warning = false;
     },
     toPersonal(){
       if(Object.values(this.user).every((item) => item != '')) this.$nuxt.$options.router.push('/register/personal')
