@@ -71,6 +71,32 @@
           <v-icon v-else-if="(favorite === false)" class="heart" @click="changeFavorite"
             >mdi-heart-outline</v-icon
           >
+          <v-dialog v-model="clickBtnClaim" width="500">
+            <template v-slot:activator="{ on, attrs }">
+                <v-icon class="claim" v-bind="attrs"
+                  v-on="on">mdi-email-alert-outline</v-icon>
+              </template>
+
+              <v-card>
+                <v-card-title class="grey lighten-2 text-wrap">
+                  Жалоба
+                </v-card-title>
+                <v-card-text>
+                  Вы уверены, что хотите пожаловаться на этого пользователя? Он будет удален из Ваших симпатий, а жалоба будет отправлена администратору.</v-card-text
+                >
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="primary" text @click="clickBtnClaim = false">
+                    Отмена
+                  </v-btn>
+                  <v-btn color="primary" text @click="clickBtnClaim = false">
+                    Пожаловаться
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
         </div>
       </div>
     </v-card>
@@ -84,6 +110,7 @@ export default {
     return {
       upBtnChat: false,
       upBtnClose: false,
+      clickBtnClaim: false
     }
   },
   props: [
@@ -128,6 +155,10 @@ export default {
 .unread {
   color: #ff5a7b;
 }
+.claim:hover{
+  color: #ff1a48;
+  cursor: pointer;
+}
 .btn_chat,
 .btn_close {
   box-sizing: border-box;
@@ -148,6 +179,7 @@ export default {
   color: #ff1a48;
   background-color: #ffffff !important;
 }
+
 .btn_chat:hover {
   color: #ffffff;
   background-color: #ff5a7b !important;

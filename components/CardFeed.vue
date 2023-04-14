@@ -126,6 +126,34 @@
             </v-dialog>
           </div>
         </div>
+        <div class="col-1 order-lg-last order-3">
+        <v-dialog v-model="clickBtnClaim" width="500">
+            <template v-slot:activator="{ on, attrs }">
+                <v-icon class="claim" v-bind="attrs"
+                  v-on="on">mdi-email-alert-outline</v-icon>
+              </template>
+
+              <v-card>
+                <v-card-title class="grey lighten-2 text-wrap">
+                  Жалоба
+                </v-card-title>
+                <v-card-text>
+                  Вы уверены, что хотите пожаловаться на этого пользователя? Он будет удален из Вашей ленты, а жалоба будет отправлена администратору.</v-card-text
+                >
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="primary" text @click="clickBtnClaim = false">
+                    Отмена
+                  </v-btn>
+                  <v-btn color="primary" text @click="clickBtnClaim = false">
+                    Пожаловаться
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
+            </div>
       </div>
     </v-card>
   </div>
@@ -140,6 +168,7 @@ export default {
       upBtnClose: false,
       clickBtnChat: false,
       clickBtnClose: false,
+      clickBtnClaim: false,
     }
   },
   props: [
@@ -167,6 +196,10 @@ export default {
   font-weight: 300;
   font-size: 20px;
   line-height: 23px;
+}
+.claim:hover{
+  color: #ff1a48;
+  cursor: pointer;
 }
 .heart {
   color: #ff5a7b;

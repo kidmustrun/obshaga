@@ -36,7 +36,7 @@ export const actions = {
       requestHeaders
     )
     context.commit('SET_TOKEN', response[1])
-    location.reload()
+    this.$router.push('/')
   },
   async login(context, user) {
     const response = await this.$axios.$post(
@@ -45,6 +45,7 @@ export const actions = {
       requestHeaders
     )
     context.commit('SET_TOKEN', response[1])
+    this.$router.push('/')
     location.reload()
   },
   async logout(context) {
