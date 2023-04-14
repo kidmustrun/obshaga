@@ -65,7 +65,8 @@
 <script>
 export default {
   name: 'AboutPage',
-  layout: 'app'
+  layout: 'app',
+  middleware: 'auth',
 }
 </script>
 <style>

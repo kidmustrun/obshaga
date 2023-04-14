@@ -110,6 +110,7 @@
 export default {
   name: 'ProfilePage',
   layout: 'app',
+  middleware: 'auth',
   data: () => ({
     file: null,
     content: '',
@@ -147,9 +148,7 @@ export default {
     onImageLoad(e) {
       this.content = e.target.result
       let filename = this.file instanceof File ? this.file.name : ''
-      // Dispatch new input event with filename
       this.$emit('input', filename)
-      // Dispatch new event with image content
       this.$emit('image-changed', this.content)
     },
   },

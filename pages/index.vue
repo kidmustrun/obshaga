@@ -91,7 +91,9 @@
             class="input_chat p-3"
             placeholder="Напишите сообщение..."
           />
-          <button class="button_send"><img src="~/assets/arrow_send.svg"></button>
+          <button class="button_send">
+            <img src="~/assets/arrow_send.svg" />
+          </button>
         </div>
       </div>
     </div>
@@ -120,7 +122,7 @@
       </div>
       <div class="pt-4 p-3">
         <Card
-          v-for="user in users"
+          v-for="user in usersFiltered"
           :key="user.id"
           :id="user.id"
           :src="user.photo_url"
@@ -134,6 +136,7 @@
           :favorite="user.favorite"
           :unread="user.unread"
           @openParentChat="openUserChatMethod"
+          @changeFavorite="changeFavoriteMethod"
         />
       </div>
     </div>
@@ -144,6 +147,7 @@
 export default {
   name: 'IndexPage',
   layout: 'app',
+  // middleware: 'auth',
   data: () => ({
     chatOpen: false,
     users: [
@@ -198,8 +202,8 @@ export default {
             color: '#FF5A7B',
           },
         ],
-        favorite: false,
-        unread: true,
+        favorite: true,
+        unread: false,
       },
     ],
     filters: [
@@ -226,9 +230,11 @@ export default {
     width: 0,
     chat: '',
     userOpened: {},
+    usersFiltered: {},
   }),
   created() {
     if (process.browser) window.addEventListener('resize', this.updateWidth)
+    this.usersFiltered = this.users
   },
   methods: {
     makeFilterActive(filter) {
@@ -237,6 +243,11 @@ export default {
         return filter
       })
       this.filters.find((item) => item.id === filter.id).isActive = true
+      if (filter.title == 'Все') this.usersFiltered = this.users
+      if (filter.title == 'Непрочитанные')
+        this.usersFiltered = this.users.filter((user) => user.unread === true)
+      if (filter.title == 'Избранные')
+        this.usersFiltered = this.users.filter((user) => user.favorite === true)
     },
     updateWidth() {
       this.width = window.innerWidth
@@ -244,11 +255,17 @@ export default {
     },
     openUserChatMethod(id) {
       this.userOpened = this.users.find((user) => user.id === id)
+      this.users.find((user) => user.id === id).unread = false;
       // this.messages = this.user.messages;
       this.openUserChat = true
       this.updateWidth()
       if (this.width <= 768) this.chatOpen = false
       else this.chatOpen = true
+    },
+    changeFavoriteMethod(id) {
+      this.users.find((user) => user.id === id).favorite = !this.users.find(
+        (user) => user.id === id
+      ).favorite
     },
     scrollToDown() {
       const el = this.$el.querySelector('#chat')
@@ -346,17 +363,17 @@ h1 {
   right: 70px;
   bottom: 25%;
 }
-.button_send img{
+.button_send img {
   width: 50px;
 }
 .input_chat {
-position: relative;
+  position: relative;
   background: #ffffff;
   border-radius: 10px;
   width: 100%;
 }
-.input_chat:focus{
-  outline:#ddd 1px solid;
+.input_chat:focus {
+  outline: #ddd 1px solid;
 }
 @media screen and (max-width: 768px) {
   .openUserChat,

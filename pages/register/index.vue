@@ -174,7 +174,7 @@ export default {
   methods: {
     toSearch(){
       if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.$nuxt.$options.router.push('/register/search')
-      else this.warning = true;
+      else this.warning = false;
     },
     setUserData() {
       this.$store.commit('SET_USER', {

@@ -67,8 +67,8 @@
           </div>
         </div>
         <div class="col-1 order-lg-last order-3">
-          <v-icon v-if="favorite" class="heart">mdi-heart</v-icon>
-          <v-icon v-else-if="(favorite === false)" class="heart"
+          <v-icon v-if="favorite" class="heart" @click="changeFavorite">mdi-heart</v-icon>
+          <v-icon v-else-if="(favorite === false)" class="heart" @click="changeFavorite"
             >mdi-heart-outline</v-icon
           >
         </div>
@@ -102,6 +102,9 @@ export default {
   methods: {
     openChat(){
       this.$emit('openParentChat', this.id)
+    },
+    changeFavorite(){
+      this.$emit('changeFavorite', this.id)
     }
   }
 }

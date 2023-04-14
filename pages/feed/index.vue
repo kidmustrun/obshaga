@@ -24,6 +24,7 @@
 export default {
   name: 'FeedPage',
   layout: 'app',
+  middleware: 'auth',
   data: () => ({
     chatOpen: false,
     users: [

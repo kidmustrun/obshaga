@@ -5,6 +5,7 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
+const url_base = 'http://4f75-95-165-9-250.ngrok-free.app'
 export const state = () => ({
   user: {},
 })
@@ -28,7 +29,7 @@ export const mutations = {
   },
 }
 export const actions = {
-  async register(context, user) {
+  async registerUser(context, user) {
     const response = await this.$axios.$post(
       `${url_base}register`,
       user,

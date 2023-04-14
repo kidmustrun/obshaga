@@ -32,9 +32,17 @@
           <span class="big_text">{{ user.name }} {{ user.surname }}</span>
           <br />
           <v-icon left> mdi-account </v-icon>
-          <v-chip v-if="this.user.gender === 'female'" style="background-color: #ff5a7b; color: #fff" small>женский</v-chip
+          <v-chip
+            v-if="this.user.gender === 'female'"
+            style="background-color: #ff5a7b; color: #fff"
+            small
+            >женский</v-chip
           >
-          <v-chip v-if="this.user.gender === 'male'" style="background-color: #A35AFF; color: #fff" small>мужской</v-chip
+          <v-chip
+            v-if="this.user.gender === 'male'"
+            style="background-color: #a35aff; color: #fff"
+            small
+            >мужской</v-chip
           ><br />
           <span><v-icon left>mdi-calendar</v-icon>{{ user.birthday }}</span
           ><br />
@@ -110,7 +118,9 @@
     </div>
     <div class="d-flex justify-content-around mt-3">
       <NuxtLink class="link_grey" to="/register/search">назад</NuxtLink>
-      <NuxtLink class="link" to="/register/search">зарегистрироваться</NuxtLink>
+      <button @click="sendRegister" class="link" to="/register/search">
+        зарегистрироваться
+      </button>
     </div>
   </div>
 </template>
@@ -141,7 +151,7 @@ export default {
     value: null,
   }),
   created() {
-    if(this.user.search) this.values = [this.user.search]
+    if (this.user.search) this.values = [this.user.search]
     this.setUserData()
   },
   methods: {
@@ -158,7 +168,6 @@ export default {
     previewThumbnail(e) {
       if (this.file) {
         this.selectImage(this.file)
-    
       } else this.content = require('~/assets/no_photo.svg')
     },
     onImageLoad(e) {
@@ -172,6 +181,19 @@ export default {
       this.user.about = this.about
       this.user.search = this.values
       this.$store.commit('SET_USER', this.user)
+    },
+    sendRegister() {
+      this.$store.dispatch('registerUser', {
+        login: this.user.login,
+        first_name: this.user.name,
+        password: this.user.password,
+        password_confirmation: this.user.password,
+        last_name: this.user.surname,
+        second_name: this.user.surname,
+        gender: this.user.gender,
+        birth_date: this.user.birthday,
+        remember: true,
+      })
     },
   },
   computed: {
