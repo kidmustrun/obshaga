@@ -86,11 +86,11 @@
           />
         </div>
         <div class="position-fixed fixed-bottom input-message py-4 px-5">
-          <input
+          <textarea
             v-model="chat"
             class="input_chat p-3"
             placeholder="Напишите сообщение..."
-          />
+          ></textarea>
           <button class="button_send">
             <img src="~/assets/arrow_send.svg" />
           </button>
@@ -357,11 +357,16 @@ h1 {
 }
 .input-message {
   left: 256px;
+
+}
+textarea {
+	resize: none;
 }
 .button_send {
   position: absolute;
+  background-color: #ffffff;
   right: 70px;
-  bottom: 25%;
+  bottom: 33%;
 }
 .button_send img {
   width: 50px;
@@ -371,6 +376,7 @@ h1 {
   background: #ffffff;
   border-radius: 10px;
   width: 100%;
+  padding-right: 70px !important;
 }
 .input_chat:focus {
   outline: #ddd 1px solid;
