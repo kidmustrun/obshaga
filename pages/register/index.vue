@@ -81,11 +81,27 @@
               required
             >
               <option value="" disabled selected hidden></option>
-              <option>Информационных технологий</option>
-              <option>2</option>
-              <option>3</option>
+              <option v-for="faculty in faculties" :value="faculty.id">{{ faculty.name }}</option>
             </select>
             <span class="floating-label">факультет</span>
+            <span class="error-label"></span>
+          </div>
+          <div class="auth_form">
+            <select
+              v-model="direction"
+              class="auth_input"
+              type="text"
+              id="direction"
+              name="direction"
+              @change="setUserData"
+              required
+            >
+              <option value="" disabled selected hidden></option>
+              <option v-for="direction in directionsFiltered" :value="direction.dir_id">
+                {{ direction.name }}
+              </option>
+            </select>
+            <span class="floating-label">направление</span>
             <span class="error-label"></span>
           </div>
           <div class="auth_form">
@@ -130,11 +146,13 @@
     </div>
     <div class="d-flex justify-content-around">
       <NuxtLink class="link_grey" to="/auth">назад</NuxtLink>
-      <button @click="toSearch" class="link" :style="[
-                    warning
-                      ? { color: '#FF5A7B' }
-                      : { color: '#ddd' },
-                  ]">вперед</button>
+      <button
+        @click="toSearch"
+        class="link"
+        :style="[warning ? { color: '#FF5A7B' } : { color: '#ddd' }]"
+      >
+        вперед
+      </button>
     </div>
   </div>
 </template>
@@ -150,6 +168,7 @@ export default {
       login: '',
       birthday: '',
       faculty: '',
+      direction: '',
       course: '',
       password: '',
       warning: false,
@@ -161,20 +180,48 @@ export default {
     if (this.user.login) this.login = this.user.login
     if (this.user.birthday) this.birthday = this.user.birthday
     if (this.user.faculty) this.faculty = this.user.faculty
+    if (this.user.direction) this.direction = this.user.direction
     if (this.user.course) this.course = this.user.course
     if (this.user.password) this.password = this.user.password
-    if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.warning = true;
-      else this.warning = false;
+    this.$store.commit('SET_USER', this.user)
+    if (
+      Object.values(this.user).every((item) => item != '') &&
+      Object.values(this.user).some((item) => item != '')
+    )
+      this.warning = true
+    else this.warning = false
+    this.$store.dispatch('getFaculties')
+    this.$store.dispatch('getDirections')
   },
   computed: {
     user() {
-      return this.$store.state.user
+      return this.$store.getters.USER
+    },
+    faculties() {
+      return this.$store.state.faculties
+    },
+    directions() {
+      return this.$store.state.directions
+    },
+    directionsFiltered() {
+      if (this.faculty) {
+       const directionsFilteredTemp = this.directions.filter(
+          direction => {
+           return direction.f_id == this.faculty}
+        )
+        console.log(directionsFilteredTemp)
+        return directionsFilteredTemp
+      }
     },
   },
   methods: {
-    toSearch(){
-      if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.$nuxt.$options.router.push('/register/search')
-      else this.warning = false;
+    toSearch() {
+      if (
+        Object.values(this.user).every((item) => item != '') &&
+        Object.values(this.user).some((item) => item != '')
+      )
+        this.$nuxt.$options.router.push('/register/search')
+      else this.warning = false
     },
     setUserData() {
       this.$store.commit('SET_USER', {
@@ -183,11 +230,16 @@ export default {
         login: this.login,
         birthday: this.birthday,
         faculty: this.faculty,
+        direction: this.direction,
         course: this.course,
         password: this.password,
       })
-      if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.warning = true;
-      else this.warning = false;
+      if (
+        Object.values(this.user).every((item) => item != '') &&
+        Object.values(this.user).some((item) => item != '')
+      )
+        this.warning = true
+      else this.warning = false
     },
   },
 }

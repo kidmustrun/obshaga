@@ -25,30 +25,30 @@
           </v-file-input>
         </div>
         <div class="col-md-8 offset-lg-1">
-          <span class="big_text">{{ user.name }} {{ user.surname }}</span>
+          <span class="big_text">Ирина Громова</span>
           <br />
           <v-icon left> mdi-account </v-icon>
           <v-chip
-            v-if="this.user.gender === 'female'"
             style="background-color: #ff5a7b; color: #fff"
             small
             >женский</v-chip
           >
-          <v-chip
+          <!-- <v-chip
             v-if="this.user.gender === 'male'"
             style="background-color: #a35aff; color: #fff"
             small
             >мужской</v-chip
-          ><br />
+          > -->
+          <br />
           <span><v-icon left>mdi-calendar</v-icon>13.01.2002</span><br />
           <span>
-            <v-icon left>mdi-school</v-icon>{{ user.faculty }},
-            веб-технологии, {{ user.course }} курс
+            <v-icon left>mdi-school</v-icon>Информационных технологий,
+            веб-технологии
           </span>
 
           <v-card>
             <v-textarea
-            v-model="user.about"
+            v-model="about"
               flat
               solo
               clearable
@@ -59,7 +59,7 @@
             >
             </v-textarea>
             <v-autocomplete
-              v-model="user.filters"
+              v-model="values"
               :items="filters"
               solo
               dense
@@ -163,9 +163,6 @@ export default {
     },
   },
   computed: {
-    user(){
-      return this.$store.state.user;
-    },
     src() {
       if (this.content) {
         return this.content

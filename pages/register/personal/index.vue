@@ -47,7 +47,7 @@
           <span><v-icon left>mdi-calendar</v-icon>{{ user.birthday }}</span
           ><br />
           <span>
-            <v-icon left>mdi-school</v-icon>{{ user.faculty }}, веб-технологии,
+            <v-icon left>mdi-school</v-icon>{{ faculty }}, {{ direction }},
             {{ user.course }} курс
           </span>
 
@@ -67,7 +67,6 @@
             <v-autocomplete
               v-model="values"
               :items="filters"
-              @change="setUserData"
               solo
               dense
               chips
@@ -118,7 +117,7 @@
     </div>
     <div class="d-flex justify-content-around mt-3">
       <NuxtLink class="link_grey" to="/register/search">назад</NuxtLink>
-      <button @click="sendRegister" class="link" to="/register/search">
+      <button @click="sendRegister" class="link">
         зарегистрироваться
       </button>
     </div>
@@ -152,6 +151,7 @@ export default {
   }),
   created() {
     if (this.user.search) this.values = [this.user.search]
+    if (!this.user.name) this.$nuxt.$options.router.push('/register')
     this.setUserData()
   },
   methods: {
@@ -177,34 +177,79 @@ export default {
       this.$emit('image-changed', this.content)
     },
     setUserData() {
-      this.user.file = this.file
-      this.user.about = this.about
-      this.user.search = this.values
-      this.$store.commit('SET_USER', this.user)
+      let userTemp = {}
+      for (let key in this.user) {
+        userTemp[key] = this.user[key]
+      }
+      userTemp.file = this.file
+      userTemp.about = this.about
+      userTemp.search = this.values
+      this.$store.commit('SET_USER', userTemp)
     },
     sendRegister() {
-      this.$store.dispatch('registerUser', {
-        login: this.user.login,
-        first_name: this.user.name,
-        password: this.user.password,
-        password_confirmation: this.user.password,
-        last_name: this.user.surname,
-        second_name: this.user.surname,
-        gender: this.user.gender,
-        birth_date: this.user.birthday,
-        remember: true,
+      const interests = []
+      this.values.forEach((value) => {
+        switch (value) {
+          case 'любовь':
+            interests.push(1)
+            break
+          case 'дружба':
+            interests.push(2)
+            break
+          case 'помощь по учёбе':
+            interests.push(3)
+            break
+        }
       })
+      const formData = new FormData()
+      formData.append('image', this.file)
+      console.log(this.file)
+      this.$store.dispatch('registerUser', [
+        {
+          login: this.user.login,
+          first_name: this.user.name,
+          password: this.user.password,
+          password_confirmation: this.user.password,
+          last_name: this.user.surname,
+          second_name: this.user.surname,
+          gender: this.user.gender,
+          birth_date: this.user.birthday,
+          remember: true,
+        },
+        [
+          {
+            id: 0,
+            group: '191-321',
+            about: this.about,
+            directionId: this.user.direction,
+            interests: interests,
+          },
+          { image: this.file },
+        ],
+      ])
     },
   },
   computed: {
     user() {
-      return this.$store.state.user
+      return this.$store.getters.USER
     },
     src() {
       if (this.content) {
         return this.content
       }
       return require('~/assets/no_photo.svg')
+    },
+    faculty() {
+      if (this.$store.state.faculties[0])
+        return this.$store.state.faculties.filter(
+          (faculty) => faculty.id == this.user.faculty
+        )[0].name
+    },
+    direction() {
+      if (this.$store.state.directions[0])
+        return this.$store.state.directions
+          .filter((direction) => direction.dir_id == this.user.direction)[0]
+          .name.toLowerCase()
     },
   },
 }

@@ -65,14 +65,19 @@ export default {
   },
   computed: {
     user() {
-      return this.$store.state.user
+      return this.$store.getters.USER
     },
   },
   created() {
+    if(!this.user.name) this.$nuxt.$options.router.push('/register')
     if(this.user.gender) this.gender = this.user.gender;
-    if(this.user.search && Array.isArray(this.user.search)) this.search = this.user.search[0];
-    delete this.user.about;
-    delete this.user.file;
+    let userTemp = {}; 
+      for (let key in this.user) {
+        userTemp[key] = this.user[key];
+      }
+    delete userTemp.about;
+    delete userTemp.file;
+    this.$store.commit('SET_USER', userTemp)
     this.setUserData()
   },
   methods: {
@@ -89,9 +94,13 @@ export default {
       this.setUserData()
     },
     setUserData() {
-      this.user.gender = this.gender;
-      this.user.search = this.search;
-      this.$store.commit('SET_USER', this.user)
+      let userTemp = {}; 
+      for (let key in this.user) {
+        userTemp[key] = this.user[key];
+      }
+      userTemp.gender = this.gender;
+      userTemp.search = this.search;
+      this.$store.commit('SET_USER', userTemp)
       if(Object.values(this.user).every((item) => item != '') && Object.values(this.user).some((item) => item != '')) this.warning = true;
       else this.warning = false;
     },
