@@ -115,12 +115,18 @@
         </div>
       </div>
     </div>
+    <div class="mt-2 alert alert-danger w-50 text-center mx-auto" v-if="errors">
+        <div v-for="error in errors">
+        <span v-for="errorText in error"> {{ errorText }}</span>
+        </div>
+      </div>
     <div class="d-flex justify-content-around mt-3">
       <NuxtLink class="link_grey" to="/register/search">назад</NuxtLink>
       <button @click="sendRegister" class="link">
         зарегистрироваться
       </button>
     </div>
+    <OverlayLoader/>
   </div>
 </template>
 
@@ -250,6 +256,9 @@ export default {
         return this.$store.state.directions
           .filter((direction) => direction.dir_id == this.user.direction)[0]
           .name.toLowerCase()
+    },
+    errors() {
+      return this.$store.state.error
     },
   },
 }

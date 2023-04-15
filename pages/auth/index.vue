@@ -43,6 +43,7 @@
       </div>
     </div>
     <NuxtLink class="link_grey about" to="auth/about">о приложении</NuxtLink>
+    <OverlayLoader/>
   </div>
 </template>
 
@@ -62,12 +63,14 @@ export default {
         password: this.password,
         remember: true,
       })
+      this.overlay=false;
     },
   },
   computed: {
     error() {
       return this.$store.state.error
     },
+ 
   },
 }
 </script>

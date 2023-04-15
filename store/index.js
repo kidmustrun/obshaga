@@ -13,6 +13,7 @@ export const state = () => ({
   directions: [],
   all_profiles: [],
   error: '',
+  overlay: false,
 })
 export const getters = {
   TOKEN: () => {
@@ -44,6 +45,9 @@ export const mutations = {
   SET_USER_ID: (state, payload) => {
     state.user.id = payload
   },
+  SET_OVERLAY: (state, payload) => {
+    state.overlay = payload
+  },
   SET_USERS: (state, payload) => {
     state.users = payload
   },
@@ -59,24 +63,28 @@ export const mutations = {
 }
 export const actions = {
   async registerUser({ commit, dispatch }, data) {
-    const response = await this.$axios.$post(
-      `${url_base}register`,
-      data[0],
-      requestHeaders
-    )
-    this.commit('SET_USER_ID', response)
-    data[1][0].id = response
-    data[1][1].user_id = response
-    this.dispatch('createProfile', data[1])
+    this.commit('SET_OVERLAY', true)
+    this.$axios
+      .$post(`${url_base}register`, data[0], requestHeaders)
+      .then((response) => {
+        this.commit('SET_USER_ID', response)
+        data[1][0].id = response
+        data[1][1].user_id = response
+        this.dispatch('createProfile', data[1])
+      })
+      .catch((error) => {
+        this.commit('SET_ERROR', error.response.data.error.errors)
+        this.commit('SET_OVERLAY', false)
+      })
   },
   async createProfile(context, data) {
-    const response = await this.$axios.$post(
-      `${url_base}reg/createProfile`,
-      data[0],
-      requestHeaders
-    )
-    // context.commit('SET_TOKEN', response[1])
-    this.dispatch('loadPhoto', data[1])
+    this.$axios
+      .$post(`${url_base}reg/createProfile`, data[0], requestHeaders)
+      .then(() => this.dispatch('loadPhoto', data[1]))
+      .catch((error) => {
+        context.commit('SET_ERROR', error.response.data.error.errors)
+        context.commit('SET_OVERLAY', false)
+      })
   },
   async loadPhoto(context, photo) {
     let user = photo.user_id
@@ -88,17 +96,23 @@ export const actions = {
       formData,
       { 'Content-Type': 'multipart/form-data' }
     )
+    context.commit('SET_OVERLAY', false)
     this.$router.push('/auth')
   },
   async login(context, user) {
+    context.commit('SET_OVERLAY', true)
     this.$axios
       .$post(`${url_base}login`, user, requestHeaders)
       .then((response) => {
         context.commit('SET_TOKEN', response)
+        context.commit('SET_OVERLAY', false)
         this.$router.push('/')
         location.reload()
       })
-      .catch((error) => context.commit('SET_ERROR', error.response.data[1]))
+      .catch((error) => {
+        context.commit('SET_ERROR', error.response.data[1])
+        context.commit('SET_OVERLAY', false)
+      })
   },
   async logout(context) {
     // const response = await this.$axios.$post(`${url_base}logout`, null, {
