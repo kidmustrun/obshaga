@@ -38,6 +38,9 @@
       <div class="mt-2">
         <NuxtLink class="link" to="/register">зарегистрироваться</NuxtLink>
       </div>
+      <div class="mt-5 alert alert-danger" v-if="error">
+        <span>{{ error }}</span>
+      </div>
     </div>
     <NuxtLink class="link_grey about" to="auth/about">о приложении</NuxtLink>
   </div>
@@ -53,15 +56,20 @@ export default {
     }
   },
   methods: {
-    sendLogin(){
+    sendLogin() {
       this.$store.dispatch('login', {
         login: this.login,
         password: this.password,
         remember: true,
       })
     },
-    }
-  }
+  },
+  computed: {
+    error() {
+      return this.$store.state.error
+    },
+  },
+}
 </script>
 <style scoped>
 .container-fluid {

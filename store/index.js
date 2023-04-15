@@ -5,12 +5,14 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://c392-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://f7a5-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
   faculties: [],
   directions: [],
+  all_profiles: [],
+  error: '',
 })
 export const getters = {
   TOKEN: () => {
@@ -18,6 +20,9 @@ export const getters = {
   },
   USER: (state) => {
     return state.user
+  },
+  ERROR: (state) => {
+    return state.error
   },
   USER_ID: (state) => {
     return state.user.id
@@ -29,6 +34,9 @@ export const mutations = {
   },
   DELETE_TOKEN: (state) => {
     Cookies.remove('token')
+  },
+  SET_ERROR: (state, payload) => {
+    state.error = payload
   },
   SET_USER: (state, payload) => {
     state.user = payload
@@ -44,6 +52,9 @@ export const mutations = {
   },
   SET_DIRECTIONS: (state, payload) => {
     state.directions = payload
+  },
+  SET_ALL_PROFILES: (state, payload) => {
+    state.all_profiles = payload
   },
 }
 export const actions = {
@@ -80,14 +91,14 @@ export const actions = {
     this.$router.push('/auth')
   },
   async login(context, user) {
-    const response = await this.$axios.$post(
-      `${url_base}login`,
-      user,
-      requestHeaders
-    )
-    context.commit('SET_TOKEN', response[1])
-    this.$router.push('/')
-    location.reload()
+    this.$axios
+      .$post(`${url_base}login`, user, requestHeaders)
+      .then((response) => {
+        context.commit('SET_TOKEN', response)
+        this.$router.push('/')
+        location.reload()
+      })
+      .catch((error) => context.commit('SET_ERROR', error.response.data[1]))
   },
   async logout(context) {
     // const response = await this.$axios.$post(`${url_base}logout`, null, {
@@ -115,5 +126,11 @@ export const actions = {
       requestHeaders
     )
     context.commit('SET_DIRECTIONS', response)
+  },
+  async getAllProfiles() {
+    const response = await this.$axios.$get(`${url_base}api/v1/allProfiles`, {
+      headers: { Authorization: Cookies.get('token') },
+    })
+    context.commit('SET_ALL_PROFILES', response)
   },
 }
