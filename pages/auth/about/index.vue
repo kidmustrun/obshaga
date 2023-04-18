@@ -71,6 +71,9 @@
 <script>
 export default {
   name: 'AuthAboutPage',
+  head: {
+    title: 'Общага | О приложении',
+  },
   layout: 'register'
 }
 </script>

@@ -1,4 +1,5 @@
 <template>
+
   <div
     class="position-relative"
     data-app
@@ -152,6 +153,9 @@
 <script>
 export default {
   name: 'IndexPage',
+  head: {
+    title: 'Общага | Мои симпатии',
+  },
   layout: 'app',
   // middleware: 'auth',
   data: () => ({

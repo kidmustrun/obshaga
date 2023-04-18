@@ -25,6 +25,9 @@
 export default {
   name: 'FeedPage',
   layout: 'app',
+  head: {
+    title: 'Общага | Лента',
+  },
   // middleware: 'auth',
   data: () => ({
     chatOpen: false,

@@ -54,8 +54,11 @@
 
 <script>
 export default {
-  name: 'RegisterPersonalPage',
+  name: 'RegisterSearchPage',
   layout: 'register',
+  head: {
+    title: 'Общага | Регистрация',
+  },
   data() {
     return {
       gender: 'female',

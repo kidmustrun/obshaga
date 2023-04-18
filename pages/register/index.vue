@@ -161,6 +161,9 @@
 export default {
   name: 'RegisterPage',
   layout: 'register',
+  head: {
+    title: 'Общага | Регистрация',
+  },
   data() {
     return {
       name: '',

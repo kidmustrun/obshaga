@@ -50,6 +50,9 @@
 <script>
 export default {
   name: 'AuthPage',
+  head: {
+    title: 'Общага | Авторизация',
+  },
   data() {
     return {
       login: '',

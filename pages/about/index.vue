@@ -66,6 +66,9 @@
 export default {
   name: 'AboutPage',
   layout: 'app',
+  head: {
+    title: 'Общага | О приложении',
+  },
   // middleware: 'auth',
 }
 </script>

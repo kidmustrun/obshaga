@@ -132,7 +132,10 @@
 
 <script>
 export default {
-  name: 'RegisterSearchPage',
+  name: 'RegisterPersonalPage',
+  head: {
+    title: 'Общага | Регистрация',
+  },
   layout: 'register',
   data: () => ({
     file: null,

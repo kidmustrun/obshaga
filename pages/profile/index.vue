@@ -121,6 +121,9 @@
 export default {
   name: 'ProfilePage',
   layout: 'app',
+  head: {
+    title: 'Общага | Мой профиль',
+  },
   // middleware: 'auth',
   data: () => ({
     file: null,
@@ -163,6 +166,9 @@ export default {
       this.$emit('image-changed', this.content)
     },
   },
+  created(){
+    // this.$store.dispatch('getUser')
+  },
   computed: {
     src() {
       if (this.content) {
@@ -170,6 +176,9 @@ export default {
       }
       return require('~/assets/no_photo.svg')
     },
+    user(){
+      return this.$store.getters.USER
+    }
   },
 }
 </script>
