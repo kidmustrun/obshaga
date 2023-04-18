@@ -113,6 +113,7 @@
         <button class="button_pink">редактировать</button>
       </div>
     </v-card>
+    <OverlayLoader/>
   </div>
 </template>
 

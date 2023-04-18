@@ -17,6 +17,7 @@
           :filters="user.filters"
         />
       </div>
+      <OverlayLoader/>
     </div>
 </template>
 

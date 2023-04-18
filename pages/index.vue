@@ -120,7 +120,7 @@
           </v-list>
         </v-menu>
       </div>
-      <div class="pt-4 p-3">
+      <div class="pt-4 p-3" v-if="usersFiltered[0]">
         <Card
           v-for="user in usersFiltered"
           :key="user.id"
@@ -139,7 +139,11 @@
           @changeFavorite="changeFavoriteMethod"
         />
       </div>
+      <div class="pt-5 p-3 text-center" v-else>
+        <span class="text_no_filters">Ничего нет :(</span>
+      </div>
     </div>
+        <OverlayLoader/>
   </div>
 </template>
 
@@ -299,6 +303,10 @@ h1 {
 }
 .active {
   text-decoration-line: underline;
+}
+.text_no_filters{
+  color: #ccc;
+  font-size: 32px;
 }
 .symbol,
 .unread {
