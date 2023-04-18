@@ -16,8 +16,8 @@
           :faculty="user.faculty"
           :filters="user.filters"
         />
+        <Loader />
       </div>
-      <OverlayLoader/>
     </div>
 </template>
 

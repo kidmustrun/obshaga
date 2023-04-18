@@ -14,6 +14,7 @@ export const state = () => ({
   all_profiles: [],
   error: '',
   overlay: false,
+  loader: false,
 })
 export const getters = {
   TOKEN: () => {
@@ -47,6 +48,9 @@ export const mutations = {
   },
   SET_OVERLAY: (state, payload) => {
     state.overlay = payload
+  },
+  SET_LOADER: (state, payload) => {
+    state.loader = payload
   },
   SET_USERS: (state, payload) => {
     state.users = payload

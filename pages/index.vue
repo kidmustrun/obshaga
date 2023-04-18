@@ -102,7 +102,9 @@
         <h1>Мои симпатии</h1>
         <v-menu offset-y>
           <template v-slot:activator="{ on, attrs }">
-            <span class="filters" v-bind="attrs" v-on="on"> Фильтры </span>
+            <span class="filters" v-bind="attrs" v-on="on">{{
+              filter_name
+            }}</span>
           </template>
           <v-list>
             <v-list-item v-for="filter in filters" :key="filter.id">
@@ -138,12 +140,12 @@
           @openParentChat="openUserChatMethod"
           @changeFavorite="changeFavoriteMethod"
         />
+        <Loader />
       </div>
       <div class="pt-5 p-3 text-center" v-else>
         <span class="text_no_filters">Ничего нет :(</span>
       </div>
     </div>
-        <OverlayLoader/>
   </div>
 </template>
 
@@ -235,6 +237,7 @@ export default {
     chat: '',
     userOpened: {},
     usersFiltered: {},
+    filter_name: 'Фильтры',
   }),
   created() {
     if (process.browser) window.addEventListener('resize', this.updateWidth)
@@ -247,7 +250,11 @@ export default {
         return filter
       })
       this.filters.find((item) => item.id === filter.id).isActive = true
-      if (filter.title == 'Все') this.usersFiltered = this.users
+      this.filter_name = filter.title
+      if (filter.title == 'Все') {
+        this.usersFiltered = this.users
+        this.filter_name = 'Фильтры'
+      }
       if (filter.title == 'Непрочитанные')
         this.usersFiltered = this.users.filter((user) => user.unread === true)
       if (filter.title == 'Избранные')
@@ -259,7 +266,7 @@ export default {
     },
     openUserChatMethod(id) {
       this.userOpened = this.users.find((user) => user.id === id)
-      this.users.find((user) => user.id === id).unread = false;
+      this.users.find((user) => user.id === id).unread = false
       // this.messages = this.user.messages;
       this.openUserChat = true
       this.updateWidth()
@@ -304,7 +311,7 @@ h1 {
 .active {
   text-decoration-line: underline;
 }
-.text_no_filters{
+.text_no_filters {
   color: #ccc;
   font-size: 32px;
 }
@@ -365,10 +372,9 @@ h1 {
 }
 .input-message {
   left: 256px;
-
 }
 textarea {
-	resize: none;
+  resize: none;
 }
 .button_send {
   position: absolute;
