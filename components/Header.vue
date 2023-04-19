@@ -23,32 +23,34 @@
       </NuxtLink>
     </v-app-bar>
 
-    <v-navigation-drawer v-model="drawer" absolute temporary>
+    <v-navigation-drawer
+      v-model="drawer"
+      absolute
+      temporary
+      class="header_menu"
+    >
       <v-list nav dense>
         <v-list-item-group>
-          <v-list-item>
-            <v-list-item-title>
-              <NuxtLink to="/feed">Лента </NuxtLink></v-list-item-title
-            >
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>
-              <NuxtLink to="/">Мои симпатии </NuxtLink></v-list-item-title
-            >
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>
-              <NuxtLink to="/profile">Профиль </NuxtLink></v-list-item-title
-            >
-          </v-list-item>
-
-          <v-list-item>
-            <v-list-item-title>
-              <NuxtLink to="/about">О приложении </NuxtLink></v-list-item-title
-            >
-          </v-list-item>
+          <NuxtLink to="/feed">
+            <v-list-item>
+              <v-list-item-title> Лента </v-list-item-title>
+            </v-list-item>
+          </NuxtLink>
+          <NuxtLink to="/">
+            <v-list-item>
+              <v-list-item-title> Мои симпатии </v-list-item-title>
+            </v-list-item>
+          </NuxtLink>
+          <NuxtLink to="/profile">
+            <v-list-item>
+              <v-list-item-title> Профиль </v-list-item-title>
+            </v-list-item>
+          </NuxtLink>
+          <NuxtLink to="/about">
+            <v-list-item>
+              <v-list-item-title> О приложении </v-list-item-title>
+            </v-list-item>
+          </NuxtLink>
         </v-list-item-group>
       </v-list>
     </v-navigation-drawer>
@@ -69,6 +71,9 @@ export default {
   box-shadow: none !important;
   z-index: 1000000 !important;
   height: 64px !important;
+}
+.header_menu {
+  z-index: 10000000 !important;
 }
 .logo {
   height: 56px;

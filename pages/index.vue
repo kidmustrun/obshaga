@@ -97,7 +97,7 @@
         </div>
       </div>
     </div>
-    <div v-if="!openUserChat">
+    <div class="container pt-md-3 px-md-3 pt-0 px-0" v-if="!openUserChat">
       <v-tabs v-model="tab" background-color="transparent" color="basil" grow>
         <v-tab> Полученные </v-tab>
         <v-tab> Отправленные </v-tab>
