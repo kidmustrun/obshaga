@@ -193,7 +193,6 @@
               :faculty="user.faculty"
               :filters="user.filters"
               :favorite="user.favorite"
-              :unread="user.unread"
               @openParentChat="openUserChatMethod"
               @changeFavorite="changeFavoriteSentMethod"
             />
@@ -302,10 +301,9 @@ export default {
           },
         ],
         favorite: false,
-        unread: true,
       },
       {
-        id: 5,
+        id: 4,
         name: 'Ирина',
         surname: 'Громова',
         date: '13.01.2002',
@@ -329,7 +327,6 @@ export default {
           },
         ],
         favorite: true,
-        unread: false,
       },
     ],
     filtersReceived: [
