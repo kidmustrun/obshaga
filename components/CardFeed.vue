@@ -2,7 +2,7 @@
   <div data-app>
     <v-card elevation="1" class="mb-5">
       <div class="row p-3">
-        <div class="col-md-2 text-center col-11">
+        <div class="col-md-2 text-center col-10">
           <v-avatar
             class="ratio ratio-1x1"
             width="100%"
@@ -126,7 +126,7 @@
             </v-dialog>
           </div>
         </div>
-        <div class="col-1 order-lg-last order-3">
+        <div class="col-2 col-md-1 order-lg-last order-3">
         <v-dialog v-model="clickBtnClaim" width="500">
             <template v-slot:activator="{ on, attrs }">
                 <v-icon class="claim" v-bind="attrs"
