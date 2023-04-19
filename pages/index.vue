@@ -97,12 +97,12 @@
         </div>
       </div>
     </div>
-    <div class="container pt-md-3 px-md-3 pt-0 px-0" v-if="!openUserChat">
-      <v-tabs v-model="tab" background-color="transparent" color="basil" grow>
-        <v-tab> Полученные </v-tab>
+    <div class="container px-md-3 pt-0 px-0" v-if="!openUserChat">
+      <v-tabs v-model="tab" style="background-color: transparent !important;" grow>
+        <v-tab > Полученные </v-tab>
         <v-tab> Отправленные </v-tab>
       </v-tabs>
-      <v-tabs-items v-model="tab">
+      <v-tabs-items v-model="tab" style="background-color: transparent !important;">
         <v-tab-item>
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">

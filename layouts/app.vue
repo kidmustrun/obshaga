@@ -32,4 +32,7 @@ html{
 .v-overlay{
   z-index: 5 !important;
 }
+.theme--light.v-tabs > .v-tabs-bar{
+  background-color: transparent !important;
+}
 </style>
