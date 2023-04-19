@@ -1,5 +1,4 @@
 <template>
-
   <div
     class="position-relative"
     data-app
@@ -99,53 +98,112 @@
       </div>
     </div>
     <div class="container" v-if="!openUserChat">
-      <div class="d-flex justify-content-between align-items-center">
-        <h1>Мои симпатии</h1>
-        <v-menu offset-y>
-          <template v-slot:activator="{ on, attrs }">
-            <span class="filters" v-bind="attrs" v-on="on">{{
-              filter_name
-            }}</span>
-          </template>
-          <v-list>
-            <v-list-item v-for="filter in filters" :key="filter.id">
-              <v-list-item-title
-                class="filter d-flex justify-content-between"
-                @click="makeFilterActive(filter)"
-                ><span :class="{ active: filter.isActive }">{{
-                  filter.title
-                }}</span
-                ><span class="symbol">{{
-                  filter.simbol
-                }}</span></v-list-item-title
+      <v-tabs v-model="tab" background-color="transparent" color="basil" grow>
+        <v-tab> Полученные </v-tab>
+        <v-tab> Отправленные </v-tab>
+      </v-tabs>
+      <v-tabs-items v-model="tab">
+        <v-tab-item>
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <span
+                class="filters float-end px-3 py-1"
+                v-bind="attrs"
+                v-on="on"
+                >{{ filter_nameReceived }}</span
               >
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </div>
-      <div class="pt-4 p-3" v-if="usersFiltered[0]">
-        <Card
-          v-for="user in usersFiltered"
-          :key="user.id"
-          :id="user.id"
-          :src="user.photo_url"
-          :name="user.name"
-          :surname="user.surname"
-          :date="user.date"
-          :about="user.about"
-          :course="user.course"
-          :faculty="user.faculty"
-          :filters="user.filters"
-          :favorite="user.favorite"
-          :unread="user.unread"
-          @openParentChat="openUserChatMethod"
-          @changeFavorite="changeFavoriteMethod"
-        />
-        <Loader />
-      </div>
-      <div class="pt-5 p-3 text-center" v-else>
-        <span class="text_no_filters">Ничего нет :(</span>
-      </div>
+              <div class="clearfix"></div>
+            </template>
+            <v-list>
+              <v-list-item v-for="filter in filtersReceived" :key="filter.id">
+                <v-list-item-title
+                  class="filter d-flex justify-content-between"
+                  @click="makeFilterReceivedActive(filter)"
+                  ><span :class="{ active: filter.isActive }">{{
+                    filter.title
+                  }}</span
+                  ><span class="symbol">{{
+                    filter.simbol
+                  }}</span></v-list-item-title
+                >
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <div class="pt-4 p-3" v-if="usersReceivedFiltered[0]">
+            <Card
+              v-for="user in usersReceivedFiltered"
+              :key="user.id"
+              :id="user.id"
+              :src="user.photo_url"
+              :name="user.name"
+              :surname="user.surname"
+              :date="user.date"
+              :about="user.about"
+              :course="user.course"
+              :faculty="user.faculty"
+              :filters="user.filters"
+              :favorite="user.favorite"
+              :unread="user.unread"
+              @openParentChat="openUserChatMethod"
+              @changeFavorite="changeFavoriteReceivedMethod"
+            />
+            <Loader />
+          </div>
+          <div class="pt-5 p-3 text-center" v-else>
+            <span class="text_no_filters">Ничего нет :(</span>
+          </div>
+        </v-tab-item>
+        <v-tab-item>
+          <v-menu offset-y>
+            <template v-slot:activator="{ on, attrs }">
+              <span
+                class="filters float-end px-3 py-1"
+                v-bind="attrs"
+                v-on="on"
+                >{{ filter_nameSent }}</span
+              >
+              <div class="clearfix"></div>
+            </template>
+            <v-list>
+              <v-list-item v-for="filter in filtersSent" :key="filter.id">
+                <v-list-item-title
+                  class="filter d-flex justify-content-between"
+                  @click="makeFilterSentActive(filter)"
+                  ><span :class="{ active: filter.isActive }">{{
+                    filter.title
+                  }}</span
+                  ><span class="symbol">{{
+                    filter.simbol
+                  }}</span></v-list-item-title
+                >
+              </v-list-item>
+            </v-list>
+          </v-menu>
+          <div class="pt-4 p-3" v-if="usersSentFiltered[0]">
+            <Card
+              v-for="user in usersSentFiltered"
+              :key="user.id"
+              :id="user.id"
+              :src="user.photo_url"
+              :name="user.name"
+              :surname="user.surname"
+              :date="user.date"
+              :about="user.about"
+              :course="user.course"
+              :faculty="user.faculty"
+              :filters="user.filters"
+              :favorite="user.favorite"
+              :unread="user.unread"
+              @openParentChat="openUserChatMethod"
+              @changeFavorite="changeFavoriteSentMethod"
+            />
+            <Loader />
+          </div>
+          <div class="pt-5 p-3 text-center" v-else>
+            <span class="text_no_filters">Ничего нет :(</span>
+          </div>
+        </v-tab-item>
+      </v-tabs-items>
     </div>
   </div>
 </template>
@@ -159,8 +217,10 @@ export default {
   layout: 'app',
   // middleware: 'auth',
   data: () => ({
+    tab: null,
     chatOpen: false,
-    users: [
+    users: [],
+    usersReceived: [
       {
         id: 1,
         name: 'Ирина',
@@ -216,7 +276,63 @@ export default {
         unread: false,
       },
     ],
-    filters: [
+    usersSent: [
+      {
+        id: 3,
+        name: 'Ирина',
+        surname: 'Громова',
+        date: '13.01.2002',
+        about: 'Ищу друзей по программированию и буду рада новым знакомствам',
+        course: 4,
+        photo_url:
+          'https://sun1-27.userapi.com/impg/m_uavZ5HEm_Oa_jBKbBVhXRHKBjioxe-R-E9zg/5di_I3euAIY.jpg?size=1620x2160&quality=95&sign=641eeefc25e16874383e3364e0991550&type=album',
+        faculty: 'Информационных технологий',
+        filters: [
+          {
+            name: 'дружба',
+            color: '#FF9F5A',
+          },
+          {
+            name: 'помощь по учёбе',
+            color: '#A35AFF',
+          },
+          {
+            name: 'любовь',
+            color: '#FF5A7B',
+          },
+        ],
+        favorite: false,
+        unread: true,
+      },
+      {
+        id: 5,
+        name: 'Ирина',
+        surname: 'Громова',
+        date: '13.01.2002',
+        about: 'Ищу друзей по программированию и буду рада новым знакомствам',
+        course: 4,
+        photo_url:
+          'https://sun9-24.userapi.com/impg/OVhLzZ5n0hyQdXbSJpmzE5NMtoHZarSHTC4lZg/IySh5Ym3iRM.jpg?size=1620x2160&quality=95&sign=b52b9205acbbf5045e1f4963594ff01d&type=album',
+        faculty: 'Информационных технологий',
+        filters: [
+          {
+            name: 'дружба',
+            color: '#FF9F5A',
+          },
+          {
+            name: 'помощь по учёбе',
+            color: '#A35AFF',
+          },
+          {
+            name: 'любовь',
+            color: '#FF5A7B',
+          },
+        ],
+        favorite: true,
+        unread: false,
+      },
+    ],
+    filtersReceived: [
       {
         id: 1,
         title: 'Все',
@@ -235,34 +351,71 @@ export default {
         isActive: false,
       },
     ],
+    filtersSent: [
+      {
+        id: 1,
+        title: 'Все',
+        isActive: true,
+      },
+      {
+        id: 2,
+        title: 'Избранные',
+        simbol: 'ㅤ❤',
+        isActive: false,
+      },
+    ],
     messages: [],
     openUserChat: false,
     width: 0,
     chat: '',
     userOpened: {},
-    usersFiltered: {},
-    filter_name: 'Фильтры',
+    usersReceivedFiltered: [],
+    usersSentFiltered: [],
+    filter_nameReceived: 'Фильтры',
+    filter_nameSent: 'Фильтры',
   }),
   created() {
     if (process.browser) window.addEventListener('resize', this.updateWidth)
-    this.usersFiltered = this.users
+    this.usersReceivedFiltered = this.usersReceived
+    this.usersSentFiltered = this.usersSent
+    this.users = this.usersReceived.concat(this.usersSent)
   },
   methods: {
-    makeFilterActive(filter) {
-      this.filters = this.filters.map((filter) => {
+    makeFilterReceivedActive(filter) {
+      this.filtersReceived = this.filtersReceived.map((filter) => {
         filter.isActive = false
         return filter
       })
-      this.filters.find((item) => item.id === filter.id).isActive = true
-      this.filter_name = filter.title
+      this.filtersReceived.find((item) => item.id === filter.id).isActive = true
+      this.filter_nameReceived = filter.title
       if (filter.title == 'Все') {
-        this.usersFiltered = this.users
-        this.filter_name = 'Фильтры'
+        this.usersReceivedFiltered = this.usersReceived
+        this.filter_nameReceived = 'Фильтры'
       }
       if (filter.title == 'Непрочитанные')
-        this.usersFiltered = this.users.filter((user) => user.unread === true)
+        this.usersReceivedFiltered = this.usersReceived.filter(
+          (user) => user.unread === true
+        )
       if (filter.title == 'Избранные')
-        this.usersFiltered = this.users.filter((user) => user.favorite === true)
+        this.usersReceivedFiltered = this.usersReceived.filter(
+          (user) => user.favorite === true
+        )
+    },
+    makeFilterSentActive(filter) {
+      this.filtersSent = this.filtersSent.map((filter) => {
+        filter.isActive = false
+        return filter
+      })
+      this.filtersSent.find((item) => item.id === filter.id).isActive = true
+      this.filter_nameSent = filter.title
+      if (filter.title == 'Все') {
+        this.usersSentFiltered = this.usersSent
+        this.filter_nameSent = 'Фильтры'
+      }
+      if (filter.title == 'Избранные')
+        this.usersSentFiltered = this.usersSent.filter(
+          (user) => user.favorite === true
+        )
     },
     updateWidth() {
       this.width = window.innerWidth
@@ -277,10 +430,13 @@ export default {
       if (this.width <= 768) this.chatOpen = false
       else this.chatOpen = true
     },
-    changeFavoriteMethod(id) {
-      this.users.find((user) => user.id === id).favorite = !this.users.find(
-        (user) => user.id === id
-      ).favorite
+    changeFavoriteReceivedMethod(id) {
+      this.usersReceived.find((user) => user.id === id).favorite =
+        !this.usersReceived.find((user) => user.id === id).favorite
+    },
+    changeFavoriteSentMethod(id) {
+      this.usersSent.find((user) => user.id === id).favorite =
+        !this.usersSent.find((user) => user.id === id).favorite
     },
     scrollToDown() {
       const el = this.$el.querySelector('#chat')
