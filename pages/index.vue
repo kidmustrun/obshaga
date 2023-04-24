@@ -214,7 +214,7 @@ export default {
     title: 'Общага | Мои симпатии',
   },
   layout: 'app',
-  // middleware: 'auth',
+  middleware: 'auth',
   data: () => ({
     tab: null,
     chatOpen: false,

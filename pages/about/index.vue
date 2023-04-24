@@ -69,7 +69,7 @@ export default {
   head: {
     title: 'Общага | О приложении',
   },
-  // middleware: 'auth',
+  middleware: 'auth',
 }
 </script>
 <style>

@@ -1,18 +1,11 @@
 <template>
   <div class="container">
     <h1>Профиль</h1>
-    <v-card class="py-3 px-md-5 px-2 mt-3">
-      <button class="link_pink float-end">выйти</button>
+    <v-card class="py-3 px-md-5 px-2 mt-3" v-if="user[0]">
+      <button class="link_pink float-end" @click="logout">выйти</button>
       <div class="row mt-1 mb-1 w-100 px-3">
         <div class="col-md-3 p-md-0 p-3 text-center">
-          <v-avatar
-            class="ratio ratio-1x1"
-            width="100%"
-            height="auto"
-            max-width="250px"
-          >
-            <v-img :src="src" alt="Avatar"
-          /></v-avatar>
+          <v-avatar size="230"> <v-img :src="src" alt="Avatar" /></v-avatar>
           <v-file-input
             v-model="file"
             accept="image/*"
@@ -25,43 +18,27 @@
           </v-file-input>
         </div>
         <div class="col-md-8 offset-lg-1">
-          <v-row>
-            <v-col cols="12" md="2" class="p-0 px-1">
-              <v-text-field
-                class="big_text p-0"
-                v-model="user.name"
-                required
-                hide-details
-                @change="change = true"
-              ></v-text-field>
-            </v-col>
-
-            <v-col cols="12" md="3" class="p-0 px-1">
-              <v-text-field
-                class="big_text p-0"
-                v-model="user.surname"
-                required
-                hide-details
-                @change="change = true"
-              ></v-text-field>
-            </v-col>
-          </v-row>
+          <span>{{ user[0].first_name }} {{ user[0].last_name }}</span>
           <br />
           <v-icon left>mdi-account</v-icon
           ><v-chip
-            v-if="this.user.gender === 'female'"
+            v-if="this.user[0].gender === 'female'"
             style="background-color: #ff5a7b; color: #fff"
             small
             >женский</v-chip
           ><v-chip
-            v-if="this.user.gender === 'male'"
+            v-if="this.user[0].gender === 'male'"
             style="background-color: #a35aff; color: #fff"
             small
             >мужской</v-chip
           >
-          <v-icon @click="changeGender">mdi-swap-vertical</v-icon>
           <br />
-          <span><v-icon left>mdi-calendar</v-icon>13.01.2002</span><br />
+          <span
+            ><v-icon left>mdi-calendar</v-icon
+            >{{
+              new Date(user[0].birth_date).toLocaleString('ru', options)
+            }}</span
+          ><br />
           <span>
             <v-icon left>mdi-school</v-icon>Информационных технологий,
             веб-технологии
@@ -69,7 +46,7 @@
 
           <v-card class="mb-5">
             <v-textarea
-              v-model="user.about"
+              :value="user[1][0].about"
               flat
               solo
               clearable
@@ -81,7 +58,8 @@
             >
             </v-textarea>
             <v-autocomplete
-              v-model="user.values"
+              v-if="interests"
+              v-model="interests"
               :items="filters"
               solo
               dense
@@ -178,15 +156,17 @@
                 <div class="px-4">Нет такого фильтра :(</div>
               </template>
             </v-autocomplete>
-            
           </v-card>
         </div>
       </div>
       <div class="d-flex justify-content-between align-items-center">
         <button class="link_pink">удалить аккаунт</button>
-        <button class="button_pink" :disabled="!this.change">редактировать</button>
+        <button class="button_pink" :disabled="!this.change">
+          редактировать
+        </button>
       </div>
     </v-card>
+
     <OverlayLoader />
   </div>
 </template>
@@ -199,32 +179,15 @@ export default {
   head: {
     title: 'Общага | Мой профиль',
   },
-  // middleware: 'auth',
+  middleware: 'auth',
   data: () => ({
     file: null,
     content: '',
-    user: {
-      gender: 'female',
-      name: 'Ирина',
-      surname: 'Громова',
-      about: 'Обо мне',
-      values: ['помощь по учёбе'],
-      values_genders: ['мужской'],
+    options: {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
     },
-    filters: [
-      {
-        name: 'дружба',
-        color: '#FF9F5A',
-      },
-      {
-        name: 'помощь по учёбе',
-        color: '#A35AFF',
-      },
-      {
-        name: 'любовь',
-        color: '#FF5A7B',
-      },
-    ],
     filters_genders: [
       {
         name: 'мужской',
@@ -235,14 +198,14 @@ export default {
         color: '#FF5A7B',
       },
     ],
- change: false,
-
+    change: false,
     value: null,
+    interestsData: [],
   }),
   methods: {
     remove(item) {
-      const index = this.user.values.indexOf(item.name)
-      if (index >= 0) this.user.values.splice(index, 1)
+      const index = this.interests.indexOf(item.name)
+      if (index >= 0) this.interests.splice(index, 1)
       this.change = true
     },
     removeGender(item) {
@@ -272,20 +235,41 @@ export default {
       } else this.user.gender = 'male'
       this.change = true
     },
+    logout() {
+      this.$store.dispatch('logout')
+    },
   },
   created() {
-    // this.$store.dispatch('getUser')
+    this.$store.dispatch('getUser')
+    this.$store.dispatch('getFilters')
   },
+
   computed: {
+    filters() {
+      return [...this.$store.state.filters]
+    },
     src() {
       if (this.content) {
         return this.content
-      }
-      return require('~/assets/no_photo.svg')
+      } else if (this.user[1].photo.place)
+        return `${this.base_url}${this.user[1].photo.place}`
+      else return require('~/assets/no_photo.svg')
     },
-    // user(){
-    //   return this.$store.getters.USER
-    // }
+    base_url() {
+      return this.$store.state.url_base
+    },
+    user() {
+      console.log(this.$store.getters.USER)
+      return { ...this.$store.getters.USER }
+    },
+    interests: {
+      get() {
+        return [...this.$store.state.interests]
+      },
+      set(newValue) {
+        this.$store.commit('SET_INTERESTS', newValue)
+      },
+    },
   },
 }
 </script>
@@ -305,7 +289,7 @@ export default {
   line-height: 28px;
   padding: 8px 16px;
 }
-.button_pink:disabled{
+.button_pink:disabled {
   opacity: 0.5;
 }
 .button_pink:hover,

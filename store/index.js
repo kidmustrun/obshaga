@@ -5,7 +5,7 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://f7a5-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://7d1e-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
@@ -15,6 +15,10 @@ export const state = () => ({
   error: '',
   overlay: false,
   loader: false,
+  auth: false,
+  url_base: 'https://7d1e-95-165-9-250.ngrok-free.app',
+  filters: [],
+  interests: []
 })
 export const getters = {
   TOKEN: () => {
@@ -33,6 +37,9 @@ export const getters = {
 export const mutations = {
   SET_TOKEN: (state, payload) => {
     Cookies.set('token', payload)
+  },
+  SET_AUTH: (state, payload) => {
+    state.auth = payload
   },
   DELETE_TOKEN: (state) => {
     Cookies.remove('token')
@@ -55,8 +62,14 @@ export const mutations = {
   SET_USERS: (state, payload) => {
     state.users = payload
   },
+  SET_INTERESTS: (state, payload) => {
+    state.interests = payload
+  },
   SET_FACULTIES: (state, payload) => {
     state.faculties = payload
+  },
+  SET_FILTERS: (state, payload) => {
+    state.filters = payload
   },
   SET_DIRECTIONS: (state, payload) => {
     state.directions = payload
@@ -108,10 +121,10 @@ export const actions = {
     this.$axios
       .$post(`${url_base}login`, user, requestHeaders)
       .then((response) => {
-        context.commit('SET_TOKEN', response)
+        context.commit('SET_TOKEN', response[1])
+        context.commit('SET_AUTH', true)
         context.commit('SET_OVERLAY', false)
         this.$router.push('/')
-        location.reload()
       })
       .catch((error) => {
         context.commit('SET_ERROR', error.response.data[1])
@@ -119,17 +132,23 @@ export const actions = {
       })
   },
   async logout(context) {
-    // const response = await this.$axios.$post(`${url_base}logout`, null, {
-    //   headers: { Authorization: Cookies.get('token') },
-    // })
-    context.commit('DELETE_TOKEN')
-    location.reload()
+    this.$axios
+      .$post(`${url_base}logout`, null, {
+        headers: { Authorization: Cookies.get('token') },
+      })
+      .then(() => {
+        context.commit('SET_AUTH', false)
+        context.commit('DELETE_TOKEN')
+        this.$router.push('/auth').catch(() => {})
+      })
   },
   async getUser(context) {
-    const response = await this.$axios.$get(`${url_base}user`, {
+    const response = await this.$axios.$get(`${url_base}api/v1/user/full`, {
       headers: { Authorization: Cookies.get('token') },
     })
     context.commit('SET_USER', response)
+    context.commit('SET_INTERESTS', response[2].interests)
+    context.commit('SET_AUTH', true)
   },
   async getFaculties(context) {
     const response = await this.$axios.$get(
@@ -144,6 +163,13 @@ export const actions = {
       requestHeaders
     )
     context.commit('SET_DIRECTIONS', response)
+  },
+  async getFilters(context) {
+    const response = await this.$axios.$get(
+      `${url_base}interests`,
+      requestHeaders
+    )
+    context.commit('SET_FILTERS', response)
   },
   async getAllProfiles() {
     const response = await this.$axios.$get(`${url_base}api/v1/allProfiles`, {

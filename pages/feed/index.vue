@@ -28,7 +28,7 @@ export default {
   head: {
     title: 'Общага | Лента',
   },
-  // middleware: 'auth',
+  middleware: 'auth',
   data: () => ({
     chatOpen: false,
     users: [
