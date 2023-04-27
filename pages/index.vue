@@ -82,6 +82,8 @@
         <div class="messages">
           <Message
             :src="userOpened.photo_url"
+            :name="userOpened.name"
+            :time="'13:23'"
             :message="'Lorem ipsumfb afjsfhusa jfbjsakf sdfsfaf sahdghasfgahgsf fdgasf fhf hdfghasfi dfhbhjfd hfd fhfsagfa'"
           />
         </div>

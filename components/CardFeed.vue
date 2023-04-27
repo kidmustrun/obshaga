@@ -10,7 +10,7 @@
             max-width="200px"
           >
             <v-img
-              :src="src"
+              :src="srcFull"
               alt="Avatar"
               class="ratio ratio-1x1"
               width="100%"
@@ -22,13 +22,13 @@
           <div class="name mb-2">{{ name }} {{ surname }}, {{ date }}</div>
           <div class="about mb-2">{{ about }}</div>
           <div class="mb-2">
-            <v-icon left>mdi-school</v-icon>{{ faculty }}, {{ course }} курс
+            <v-icon left>mdi-school</v-icon>{{ faculty }}, {{ direction }}
           </div>
 
           <div class="mb-2">
             <v-icon left>mdi-magnify</v-icon>
             <v-chip
-              v-for="(filter, index) in filters"
+              v-for="(filter, index) in filtersColors"
               :key="index"
               :style="{
                 'background-color': filter.color,
@@ -62,7 +62,9 @@
                   Написать сообщение
                 </v-card-title>
                 <v-card-text>
-                  Вы можете отправить одно сообщение, после чего Ваш профиль появится у этого пользователя в разделе "Мои симпатии".</v-card-text
+                  Вы можете отправить одно сообщение, после чего Ваш профиль
+                  появится у этого пользователя в разделе "Мои
+                  симпатии".</v-card-text
                 >
                 <v-textarea
                   flat
@@ -127,33 +129,36 @@
           </div>
         </div>
         <div class="col-2 col-md-1 order-lg-last order-3">
-        <v-dialog v-model="clickBtnClaim" width="500">
+          <v-dialog v-model="clickBtnClaim" width="500">
             <template v-slot:activator="{ on, attrs }">
-                <v-icon class="claim" v-bind="attrs"
-                  v-on="on">mdi-email-alert-outline</v-icon>
-              </template>
+              <v-icon class="claim" v-bind="attrs" v-on="on"
+                >mdi-email-alert-outline</v-icon
+              >
+            </template>
 
-              <v-card>
-                <v-card-title class="grey lighten-2 text-wrap">
-                  Жалоба
-                </v-card-title>
-                <v-card-text>
-                  Вы уверены, что хотите пожаловаться на этого пользователя? Он будет удален из Вашей ленты, а жалоба будет отправлена администратору.</v-card-text
-                >
-                <v-divider></v-divider>
+            <v-card>
+              <v-card-title class="grey lighten-2 text-wrap">
+                Жалоба
+              </v-card-title>
+              <v-card-text>
+                Вы уверены, что хотите пожаловаться на этого пользователя? Он
+                будет удален из Вашей ленты, а жалоба будет отправлена
+                администратору.</v-card-text
+              >
+              <v-divider></v-divider>
 
-                <v-card-actions>
-                  <v-spacer></v-spacer>
-                  <v-btn color="primary" text @click="clickBtnClaim = false">
-                    Отмена
-                  </v-btn>
-                  <v-btn color="primary" text @click="clickBtnClaim = false">
-                    Пожаловаться
-                  </v-btn>
-                </v-card-actions>
-              </v-card>
-            </v-dialog>
-            </div>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn color="primary" text @click="clickBtnClaim = false">
+                  Отмена
+                </v-btn>
+                <v-btn color="primary" text @click="clickBtnClaim = false">
+                  Пожаловаться
+                </v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </div>
       </div>
     </v-card>
   </div>
@@ -162,6 +167,29 @@
 <script>
 export default {
   name: 'CardFeed',
+  computed: {
+    base_url() {
+      return this.$store.state.url_base
+    },
+    srcFull() {
+      if (this.src) return `${this.base_url}${this.src}`
+      else return require('~/assets/no_photo.svg')
+    },
+    filtersAll(){
+      return [...this.$store.state.filters]
+    },
+    filtersColors(){
+      const arr = []
+      if(this.filters)
+      this.filters.forEach((value) => {
+        this.filtersAll.forEach((filter) => {
+          if(value==filter.name)
+          arr.push(filter)
+        })
+      })
+      return arr
+    }
+  },
   data() {
     return {
       upBtnChat: false,
@@ -177,7 +205,7 @@ export default {
     'surname',
     'date',
     'about',
-    'course',
+    'direction',
     'faculty',
     'filters',
     'favorite',
@@ -197,7 +225,7 @@ export default {
   font-size: 20px;
   line-height: 23px;
 }
-.claim:hover{
+.claim:hover {
   color: #ff1a48;
   cursor: pointer;
 }

@@ -18,7 +18,9 @@
           </v-file-input>
         </div>
         <div class="col-md-8 offset-lg-1">
-          <span>{{ user[0].first_name }} {{ user[0].last_name }}</span>
+          <span class="name_surname"
+            >{{ user[0].first_name }} {{ user[0].last_name }}</span
+          >
           <br />
           <v-icon left>mdi-account</v-icon
           ><v-chip
@@ -46,7 +48,7 @@
 
           <v-card class="mb-5">
             <v-textarea
-              :value="user[1][0].about"
+              v-model="about"
               flat
               solo
               clearable
@@ -107,7 +109,7 @@
                 <div class="px-4">Нет такого фильтра :(</div>
               </template>
             </v-autocomplete>
-            <v-autocomplete
+            <!-- <v-autocomplete
               v-model="user.values_genders"
               :items="filters_genders"
               solo
@@ -155,18 +157,22 @@
               <template v-slot:no-data>
                 <div class="px-4">Нет такого фильтра :(</div>
               </template>
-            </v-autocomplete>
+            </v-autocomplete> -->
           </v-card>
         </div>
       </div>
       <div class="d-flex justify-content-between align-items-center">
         <button class="link_pink">удалить аккаунт</button>
-        <button class="button_pink" :disabled="!this.change">
+        <button
+          class="button_pink"
+          :disabled="!this.change"
+          @click="updateUser"
+        >
           редактировать
         </button>
       </div>
     </v-card>
-
+    <Loader />
     <OverlayLoader />
   </div>
 </template>
@@ -200,7 +206,7 @@ export default {
     ],
     change: false,
     value: null,
-    interestsData: [],
+    gendersData: [],
   }),
   methods: {
     remove(item) {
@@ -238,6 +244,21 @@ export default {
     logout() {
       this.$store.dispatch('logout')
     },
+    updateUser() {
+      const interestsChoosed = []
+      this.interests.forEach((value) => {
+        this.filters.forEach((filter) => {
+          if (value == filter.name) interestsChoosed.push(filter.id)
+        })
+      })
+      this.$store.dispatch('updateUser', {
+        about: {
+          about: this.about,
+        },
+        interests: { interests: interestsChoosed },
+        image: this.file,
+      })
+    },
   },
   created() {
     this.$store.dispatch('getUser')
@@ -270,6 +291,32 @@ export default {
         this.$store.commit('SET_INTERESTS', newValue)
       },
     },
+    about: {
+      get() {
+        return this.$store.state.about
+      },
+      set(newValue) {
+        this.$store.commit('SET_ABOUT', newValue)
+      },
+    },
+    // genders: {
+    //   get() {
+    //     let genders_array = []
+    //     for (let i in this.$store.state.genders) {
+    //       if (this.$store.state.genders.hasOwnProperty(i) && !isNaN(+i)) {
+    //         genders_array[+i] = this.$store.state.genders[i]
+    //       }
+    //     }
+    //     return genders_array
+    //     return genders_array.map((item) => {
+    //       if (item === 'male') item = 'мужской'
+    //       else item = 'женский'
+    //     })
+    //   },
+    //   set(newValue) {
+    //     this.$store.commit('SET_GENDERS', newValue)
+    //   },
+    // },
   },
 }
 </script>
@@ -296,7 +343,7 @@ export default {
 .link_pink:hover {
   opacity: 0.95;
 }
-h1 {
+.name_surname {
   font-size: 30px;
   font-weight: 600;
   line-height: 36px;

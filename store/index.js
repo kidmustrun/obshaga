@@ -5,20 +5,21 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://7d1e-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://d94d-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
   faculties: [],
   directions: [],
-  all_profiles: [],
   error: '',
   overlay: false,
   loader: false,
   auth: false,
-  url_base: 'https://7d1e-95-165-9-250.ngrok-free.app',
+  url_base: 'https://d94d-95-165-9-250.ngrok-free.app',
   filters: [],
-  interests: []
+  interests: [],
+  genders: [],
+  about: '',
 })
 export const getters = {
   TOKEN: () => {
@@ -65,6 +66,12 @@ export const mutations = {
   SET_INTERESTS: (state, payload) => {
     state.interests = payload
   },
+  SET_GENDERS: (state, payload) => {
+    state.genders = payload
+  },
+  SET_ABOUT: (state, payload) => {
+    state.about = payload
+  },
   SET_FACULTIES: (state, payload) => {
     state.faculties = payload
   },
@@ -73,9 +80,6 @@ export const mutations = {
   },
   SET_DIRECTIONS: (state, payload) => {
     state.directions = payload
-  },
-  SET_ALL_PROFILES: (state, payload) => {
-    state.all_profiles = payload
   },
 }
 export const actions = {
@@ -143,12 +147,52 @@ export const actions = {
       })
   },
   async getUser(context) {
+    context.commit('SET_LOADER', true)
     const response = await this.$axios.$get(`${url_base}api/v1/user/full`, {
       headers: { Authorization: Cookies.get('token') },
     })
     context.commit('SET_USER', response)
+    context.commit('SET_ABOUT', response[1][0].about)
+
+    context.commit('SET_GENDERS', response[1][0].prefer_gender)
     context.commit('SET_INTERESTS', response[2].interests)
     context.commit('SET_AUTH', true)
+    context.commit('SET_LOADER', false)
+  },
+  async updateUser(context, user) {
+    context.commit('SET_OVERLAY', true)
+    if (user.about) {
+      const responseAbout = await this.$axios.$post(
+        `${url_base}api/v1/user/updateAbout`,
+        user.about,
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+    }
+    if (user.interests) {
+      console.log(user)
+      const responseInterests = await this.$axios.$post(
+        `${url_base}api/v1/user/updateInterests`,
+        user.interests,
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+    }
+    if (user.image) {
+      let formData = new FormData()
+      formData.append('image', user.image)
+      const responsePhoto = await this.$axios.$post(
+        `${url_base}api/v1/user/addPhoto`,
+        formData,
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+    }
+    context.commit('SET_OVERLAY', false)
+    // location.reload()
   },
   async getFaculties(context) {
     const response = await this.$axios.$get(
@@ -171,10 +215,16 @@ export const actions = {
     )
     context.commit('SET_FILTERS', response)
   },
-  async getAllProfiles() {
-    const response = await this.$axios.$get(`${url_base}api/v1/allProfiles`, {
-      headers: { Authorization: Cookies.get('token') },
-    })
-    context.commit('SET_ALL_PROFILES', response)
+  async getAllProfiles(context) {
+    context.commit('SET_LOADER', true)
+    const response = await this.$axios.$post(
+      `${url_base}api/v1/allProfiles`,
+      {},
+      {
+        headers: { Authorization: Cookies.get('token') },
+      }
+    )
+    context.commit('SET_USERS', response)
+    context.commit('SET_LOADER', false)
   },
 }

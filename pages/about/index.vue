@@ -73,5 +73,7 @@ export default {
 }
 </script>
 <style>
-
+p{
+  font-size: 20px;
+}
 </style>
