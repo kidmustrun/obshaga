@@ -19,10 +19,14 @@
           /></v-avatar>
         </div>
         <div class="col-md-9 order-lg-1 order-last">
-          <div class="name mb-2">{{ name }} {{ surname }}, {{ date }}</div>
+          <div class="name mb-2">{{ name }}, {{ date }}</div>
           <div class="about mb-2">{{ about }}</div>
-          <div class="mb-2">
-            <v-icon left>mdi-school</v-icon>{{ faculty }}, {{ direction }}
+          <div class="mb-2 d-flex align-items-start">
+            <v-icon left>mdi-school</v-icon>
+            <div>
+              {{ faculty.slice(0, -1) }}<br />Направление:
+              {{ direction.toLowerCase() }}
+            </div>
           </div>
 
           <div class="mb-2">
@@ -74,6 +78,7 @@
                   name="message"
                   label="Сообщение..."
                   class="mt-2 ms-3"
+                  v-model="message"
                 >
                 </v-textarea>
 
@@ -81,10 +86,24 @@
 
                 <v-card-actions>
                   <v-spacer></v-spacer>
-                  <v-btn color="primary" text @click="clickBtnChat = false">
+                  <v-btn
+                    color="primary"
+                    text
+                    @click="
+                      clickBtnChat = false
+                      message = ''
+                    "
+                  >
                     Отмена
                   </v-btn>
-                  <v-btn color="primary" text @click="clickBtnChat = false">
+                  <v-btn
+                    color="primary"
+                    text
+                    @click="
+                      clickBtnChat = false
+                      sendMatch(id)
+                    "
+                  >
                     Отправить
                   </v-btn>
                 </v-card-actions>
@@ -175,20 +194,19 @@ export default {
       if (this.src) return `${this.base_url}${this.src}`
       else return require('~/assets/no_photo.svg')
     },
-    filtersAll(){
+    filtersAll() {
       return [...this.$store.state.filters]
     },
-    filtersColors(){
+    filtersColors() {
       const arr = []
-      if(this.filters)
-      this.filters.forEach((value) => {
-        this.filtersAll.forEach((filter) => {
-          if(value==filter.name)
-          arr.push(filter)
+      if (this.filters)
+        this.filters.forEach((value) => {
+          this.filtersAll.forEach((filter) => {
+            if (value == filter.name) arr.push(filter)
+          })
         })
-      })
       return arr
-    }
+    },
   },
   data() {
     return {
@@ -197,9 +215,16 @@ export default {
       clickBtnChat: false,
       clickBtnClose: false,
       clickBtnClaim: false,
+      message: '',
     }
   },
+  methods: {
+    sendMatch(userId) {
+      this.$store.dispatch('setLike', { id: userId, message: this.message })
+    },
+  },
   props: [
+    'id',
     'src',
     'name',
     'surname',

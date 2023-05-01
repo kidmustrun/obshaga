@@ -5,7 +5,7 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://d94d-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://ec72-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
@@ -15,11 +15,13 @@ export const state = () => ({
   overlay: false,
   loader: false,
   auth: false,
-  url_base: 'https://d94d-95-165-9-250.ngrok-free.app',
+  url_base: 'https://ec72-95-165-9-250.ngrok-free.app',
   filters: [],
   interests: [],
   genders: [],
   about: '',
+  liked: [],
+  who_liked_me: [],
 })
 export const getters = {
   TOKEN: () => {
@@ -80,6 +82,12 @@ export const mutations = {
   },
   SET_DIRECTIONS: (state, payload) => {
     state.directions = payload
+  },
+  SET_LIKED: (state, payload) => {
+    state.liked = payload
+  },
+  SET_WHO_LIKED_ME: (state, payload) => {
+    state.who_liked_me = payload
   },
 }
 export const actions = {
@@ -191,6 +199,7 @@ export const actions = {
         }
       )
     }
+    context.dispatch('getUser')
     context.commit('SET_OVERLAY', false)
     // location.reload()
   },
@@ -226,5 +235,73 @@ export const actions = {
     )
     context.commit('SET_USERS', response)
     context.commit('SET_LOADER', false)
+  },
+  setLike(context, { id, message }) {
+    this.$axios
+      .$post(
+        `${url_base}api/v1/setLike/${id}`,
+        {},
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then(() => {
+        context.dispatch('getAllProfiles')
+        // context.dispatch('startChat', { id: id, message: message })
+      })
+  },
+  startChat(context, { id, message }) {
+    this.$axios
+      .$post(
+        `${url_base}api/v1/chatAPI/startChat/${id}`,
+        {},
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then((response) =>
+        context.dispatch('sendMessage', { chat_id: response, message: message })
+      )
+  },
+  async sendMessage(context, { chat_id, message }) {
+    const response = await this.$axios.$post(
+      `${url_base}api/v1/chatAPI/sendMessage/chat/${chat_id}`,
+      { message: message },
+      {
+        headers: { Authorization: Cookies.get('token') },
+      }
+    )
+  },
+  async getLiked(context) {
+    context.commit('SET_LOADER', true)
+    const response = await this.$axios
+      .$post(
+        `${url_base}api/v1/getLiked`,
+        {},
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then((response) => {
+        console.log(response)
+        context.commit('SET_LIKED', response)
+        context.commit('SET_LOADER', false)
+      })
+  },
+  async getWhoLikedMe(context) {
+    context.commit('SET_LOADER', true)
+    this.$axios
+      .$post(
+        `${url_base}api/v1/getWhoLikedMe`,
+        {},
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then((response) => {
+        console.log(response)
+        context.commit('SET_WHO_LIKED_ME', response)
+        context.commit('SET_LOADER', false)
+      })
   },
 }

@@ -13,7 +13,7 @@
             max-width="50px"
           >
             <v-img
-              :src="src"
+              :src="srcFull"
               alt="Avatar"
               class="ratio ratio-1x1"
               width="100%"
@@ -34,7 +34,16 @@
 <script>
 export default {
     name: 'Message',
-    props: ['src', 'message', 'name', 'time']
+    props: ['src', 'message', 'name', 'time'],
+    computed:{
+      base_url() {
+      return this.$store.state.url_base
+    },
+    srcFull() {
+      if (this.src) return `${this.base_url}${this.src}`
+      else return require('~/assets/no_photo.svg')
+    },
+    }
 }
 </script>
 <style scoped>

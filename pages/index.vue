@@ -17,7 +17,7 @@
         ref="menu"
         v-model="chatOpen"
         absolute
-        class="chat_panel"
+        class="chat_panel position-fixed"
         temporary
         stateless
       >
@@ -32,11 +32,11 @@
               @click="openUserChatMethod(user.id)"
             >
               <v-list-item-avatar>
-                <v-img :src="user.photo_url"></v-img>
+                <v-img :src="fullSrc(user.id)"></v-img>
               </v-list-item-avatar>
               <v-list-item-content class="ms-2">
                 <v-list-item-title
-                  >{{ user.name }} {{ user.surname }}, {{ user.date }}
+                  >{{ user.name }}, {{ user.year }}
                   <span v-if="user.unread" class="unread"
                     >●</span
                   ></v-list-item-title
@@ -81,7 +81,7 @@
         </div>
         <div class="messages">
           <Message
-            :src="userOpened.photo_url"
+            :src="userOpened.photo.place"
             :name="userOpened.name"
             :time="'13:23'"
             :message="'Lorem ipsumfb afjsfhusa jfbjsakf sdfsfaf sahdghasfgahgsf fdgasf fhf hdfghasfi dfhbhjfd hfd fhfsagfa'"
@@ -100,11 +100,18 @@
       </div>
     </div>
     <div class="container px-md-3 pt-0 px-0" v-if="!openUserChat">
-      <v-tabs v-model="tab" style="background-color: transparent !important;" grow>
-        <v-tab > Полученные </v-tab>
+      <v-tabs
+        v-model="tab"
+        style="background-color: transparent !important"
+        grow
+      >
+        <v-tab> Полученные </v-tab>
         <v-tab> Отправленные </v-tab>
       </v-tabs>
-      <v-tabs-items v-model="tab" style="background-color: transparent !important;">
+      <v-tabs-items
+        v-model="tab"
+        style="background-color: transparent !important"
+      >
         <v-tab-item>
           <v-menu offset-y>
             <template v-slot:activator="{ on, attrs }">
@@ -136,21 +143,21 @@
               v-for="user in usersReceivedFiltered"
               :key="user.id"
               :id="user.id"
-              :src="user.photo_url"
+              :src="user.photo.place"
               :name="user.name"
               :surname="user.surname"
-              :date="user.date"
+              :year="user.year"
               :about="user.about"
-              :course="user.course"
+              :direction="user.direction"
               :faculty="user.faculty"
-              :filters="user.filters"
+              :filters="user.interests"
               :favorite="user.favorite"
               :unread="user.unread"
               @openParentChat="openUserChatMethod"
               @changeFavorite="changeFavoriteReceivedMethod"
             />
-            <Loader />
           </div>
+          <Loader v-else />
           <div class="pt-5 p-3 text-center" v-else>
             <span class="text_no_filters">Ничего нет :(</span>
           </div>
@@ -186,20 +193,21 @@
               v-for="user in usersSentFiltered"
               :key="user.id"
               :id="user.id"
-              :src="user.photo_url"
+              :src="user.photo.place"
               :name="user.name"
               :surname="user.surname"
-              :date="user.date"
+              :year="user.year"
               :about="user.about"
-              :course="user.course"
+              :direction="user.direction"
               :faculty="user.faculty"
-              :filters="user.filters"
+              :filters="user.interests"
+              :unread="user.unread"
               :favorite="user.favorite"
               @openParentChat="openUserChatMethod"
               @changeFavorite="changeFavoriteSentMethod"
             />
-            <Loader />
           </div>
+          <Loader v-else />
           <div class="pt-5 p-3 text-center" v-else>
             <span class="text_no_filters">Ничего нет :(</span>
           </div>
@@ -220,117 +228,145 @@ export default {
   data: () => ({
     tab: null,
     chatOpen: false,
-    users: [],
-    usersReceived: [
-      {
-        id: 1,
-        name: 'Ирина',
-        surname: 'Громова',
-        date: '13.01.2002',
-        about: 'Ищу друзей по программированию и буду рада новым знакомствам',
-        course: 4,
-        photo_url:
-          'https://sun1-27.userapi.com/impg/m_uavZ5HEm_Oa_jBKbBVhXRHKBjioxe-R-E9zg/5di_I3euAIY.jpg?size=1620x2160&quality=95&sign=641eeefc25e16874383e3364e0991550&type=album',
-        faculty: 'Информационных технологий',
-        filters: [
-          {
-            name: 'дружба',
-            color: '#FF9F5A',
-          },
-          {
-            name: 'помощь по учёбе',
-            color: '#A35AFF',
-          },
-          {
-            name: 'любовь',
-            color: '#FF5A7B',
-          },
-        ],
-        favorite: false,
-        unread: true,
-      },
-      {
-        id: 2,
-        name: 'Ирина',
-        surname: 'Громова',
-        date: '13.01.2002',
-        about: 'Ищу друзей по программированию и буду рада новым знакомствам',
-        course: 4,
-        photo_url:
-          'https://sun9-24.userapi.com/impg/OVhLzZ5n0hyQdXbSJpmzE5NMtoHZarSHTC4lZg/IySh5Ym3iRM.jpg?size=1620x2160&quality=95&sign=b52b9205acbbf5045e1f4963594ff01d&type=album',
-        faculty: 'Информационных технологий',
-        filters: [
-          {
-            name: 'дружба',
-            color: '#FF9F5A',
-          },
-          {
-            name: 'помощь по учёбе',
-            color: '#A35AFF',
-          },
-          {
-            name: 'любовь',
-            color: '#FF5A7B',
-          },
-        ],
-        favorite: true,
-        unread: false,
-      },
-    ],
-    usersSent: [
-      {
-        id: 3,
-        name: 'Ирина',
-        surname: 'Громова',
-        date: '13.01.2002',
-        about: 'Ищу друзей по программированию и буду рада новым знакомствам',
-        course: 4,
-        photo_url:
-          'https://sun1-27.userapi.com/impg/m_uavZ5HEm_Oa_jBKbBVhXRHKBjioxe-R-E9zg/5di_I3euAIY.jpg?size=1620x2160&quality=95&sign=641eeefc25e16874383e3364e0991550&type=album',
-        faculty: 'Информационных технологий',
-        filters: [
-          {
-            name: 'дружба',
-            color: '#FF9F5A',
-          },
-          {
-            name: 'помощь по учёбе',
-            color: '#A35AFF',
-          },
-          {
-            name: 'любовь',
-            color: '#FF5A7B',
-          },
-        ],
-        favorite: false,
-      },
-      {
-        id: 4,
-        name: 'Ирина',
-        surname: 'Громова',
-        date: '13.01.2002',
-        about: 'Ищу друзей по программированию и буду рада новым знакомствам',
-        course: 4,
-        photo_url:
-          'https://sun9-24.userapi.com/impg/OVhLzZ5n0hyQdXbSJpmzE5NMtoHZarSHTC4lZg/IySh5Ym3iRM.jpg?size=1620x2160&quality=95&sign=b52b9205acbbf5045e1f4963594ff01d&type=album',
-        faculty: 'Информационных технологий',
-        filters: [
-          {
-            name: 'дружба',
-            color: '#FF9F5A',
-          },
-          {
-            name: 'помощь по учёбе',
-            color: '#A35AFF',
-          },
-          {
-            name: 'любовь',
-            color: '#FF5A7B',
-          },
-        ],
-        favorite: true,
-      },
-    ],
+    // usersReceived: [
+    //   {
+    //     id: 1,
+    //     name: 'Ирина',
+    //     surname: 'Громова',
+    //     date: '13.01.2002',
+    //     about: 'Ищу друзей по программированию и буду рада новым знакомствам',
+    //     direction: 'Веб',
+    //     photo_url:
+    //       'https://sun1-27.userapi.com/impg/m_uavZ5HEm_Oa_jBKbBVhXRHKBjioxe-R-E9zg/5di_I3euAIY.jpg?size=1620x2160&quality=95&sign=641eeefc25e16874383e3364e0991550&type=album',
+    //     faculty: 'Информационных технологий',
+    //     filters: [
+    //       {
+    //         name: 'дружба',
+    //         color: '#FF9F5A',
+    //       },
+    //       {
+    //         name: 'помощь по учёбе',
+    //         color: '#A35AFF',
+    //       },
+    //       {
+    //         name: 'любовь',
+    //         color: '#FF5A7B',
+    //       },
+    //     ],
+    //     favorite: false,
+    //     unread: true,
+    //   },
+    //   {
+    //     id: 2,
+    //     name: 'Ирина',
+    //     surname: 'Громова',
+    //     date: '13.01.2002',
+    //     about: 'Ищу друзей по программированию и буду рада новым знакомствам',
+    //     direction: 'Веб',
+    //     photo_url:
+    //       'https://sun9-24.userapi.com/impg/OVhLzZ5n0hyQdXbSJpmzE5NMtoHZarSHTC4lZg/IySh5Ym3iRM.jpg?size=1620x2160&quality=95&sign=b52b9205acbbf5045e1f4963594ff01d&type=album',
+    //     faculty: 'Информационных технологий',
+    //     filters: [
+    //       {
+    //         name: 'дружба',
+    //         color: '#FF9F5A',
+    //       },
+    //       {
+    //         name: 'помощь по учёбе',
+    //         color: '#A35AFF',
+    //       },
+    //       {
+    //         name: 'любовь',
+    //         color: '#FF5A7B',
+    //       },
+    //     ],
+    //     favorite: true,
+    //     unread: false,
+    //   },
+    //   {
+    //     id: 5,
+    //     name: 'Ирина',
+    //     surname: 'Громова',
+    //     date: '13.01.2002',
+    //     about: 'Ищу друзей по программированию и буду рада новым знакомствам',
+    //     direction: 'Веб',
+    //     photo_url:
+    //       'https://sun9-24.userapi.com/impg/OVhLzZ5n0hyQdXbSJpmzE5NMtoHZarSHTC4lZg/IySh5Ym3iRM.jpg?size=1620x2160&quality=95&sign=b52b9205acbbf5045e1f4963594ff01d&type=album',
+    //     faculty: 'Информационных технологий',
+    //     filters: [
+    //       {
+    //         name: 'дружба',
+    //         color: '#FF9F5A',
+    //       },
+    //       {
+    //         name: 'помощь по учёбе',
+    //         color: '#A35AFF',
+    //       },
+    //       {
+    //         name: 'любовь',
+    //         color: '#FF5A7B',
+    //       },
+    //     ],
+    //     favorite: true,
+    //     unread: true,
+    //   },
+    // ],
+    // usersSent: [
+    //   {
+    //     id: 3,
+    //     name: 'Ирина',
+    //     surname: 'Громова',
+    //     date: '13.01.2002',
+    //     about: 'Ищу друзей по программированию и буду рада новым знакомствам',
+    //     direction: 'Веб',
+    //     photo_url:
+    //       'https://sun1-27.userapi.com/impg/m_uavZ5HEm_Oa_jBKbBVhXRHKBjioxe-R-E9zg/5di_I3euAIY.jpg?size=1620x2160&quality=95&sign=641eeefc25e16874383e3364e0991550&type=album',
+    //     faculty: 'Информационных технологий',
+    //     filters: [
+    //       {
+    //         name: 'дружба',
+    //         color: '#FF9F5A',
+    //       },
+    //       {
+    //         name: 'помощь по учёбе',
+    //         color: '#A35AFF',
+    //       },
+    //       {
+    //         name: 'любовь',
+    //         color: '#FF5A7B',
+    //       },
+    //     ],
+    //     unread: false,
+    //     favorite: false,
+    //   },
+    //   {
+    //     id: 4,
+    //     name: 'Ирина',
+    //     surname: 'Громова',
+    //     date: '13.01.2002',
+    //     about: 'Ищу друзей по программированию и буду рада новым знакомствам',
+    //     direction: 'Веб',
+    //     photo_url:
+    //       'https://sun9-24.userapi.com/impg/OVhLzZ5n0hyQdXbSJpmzE5NMtoHZarSHTC4lZg/IySh5Ym3iRM.jpg?size=1620x2160&quality=95&sign=b52b9205acbbf5045e1f4963594ff01d&type=album',
+    //     faculty: 'Информационных технологий',
+    //     filters: [
+    //       {
+    //         name: 'дружба',
+    //         color: '#FF9F5A',
+    //       },
+    //       {
+    //         name: 'помощь по учёбе',
+    //         color: '#A35AFF',
+    //       },
+    //       {
+    //         name: 'любовь',
+    //         color: '#FF5A7B',
+    //       },
+    //     ],
+    //     unread: true,
+    //     favorite: true,
+    //   },
+    // ],
     filtersReceived: [
       {
         id: 1,
@@ -358,6 +394,12 @@ export default {
       },
       {
         id: 2,
+        title: 'Непрочитанные',
+        simbol: 'ㅤ●',
+        isActive: false,
+      },
+      {
+        id: 3,
         title: 'Избранные',
         simbol: 'ㅤ❤',
         isActive: false,
@@ -375,12 +417,32 @@ export default {
   }),
   created() {
     if (process.browser) window.addEventListener('resize', this.updateWidth)
-    this.usersReceivedFiltered = this.usersReceived
-    this.usersSentFiltered = this.usersSent
-    this.users = this.usersReceived.concat(this.usersSent)
+    this.$store.dispatch('getWhoLikedMe')
+    this.$store.dispatch('getLiked')
+    this.$store.dispatch('getFilters')
+  },
+  computed: {
+    usersSent() {
+      return [...this.$store.state.liked]
+    },
+    usersReceived() {
+      return [...this.$store.state.who_liked_me]
+    },
+    base_url() {
+      return this.$store.state.url_base
+    },
+    users() {
+      return this.usersReceived.filter(function(obj) { return usersSent.indexOf(obj) == -1; });
+    },
   },
   methods: {
+    fullSrc(userId) {
+      let user = this.users.find((user)=>user.id == userId)
+      if (user.photo.place) return `${this.base_url}${user.photo.place}`
+      else return require('~/assets/no_photo.svg')
+    },
     makeFilterReceivedActive(filter) {
+      console.log('a')
       this.filtersReceived = this.filtersReceived.map((filter) => {
         filter.isActive = false
         return filter
@@ -388,7 +450,9 @@ export default {
       this.filtersReceived.find((item) => item.id === filter.id).isActive = true
       this.filter_nameReceived = filter.title
       if (filter.title == 'Все') {
-        this.usersReceivedFiltered = this.usersReceived
+        this.usersReceivedFiltered = this.usersReceived.sort((a, b) =>
+          a.unread < b.unread ? 1 : -1
+        )
         this.filter_nameReceived = 'Фильтры'
       }
       if (filter.title == 'Непрочитанные')
@@ -408,9 +472,15 @@ export default {
       this.filtersSent.find((item) => item.id === filter.id).isActive = true
       this.filter_nameSent = filter.title
       if (filter.title == 'Все') {
-        this.usersSentFiltered = this.usersSent
+        this.usersSentFiltered = this.usersSent.sort((a, b) =>
+          a.unread < b.unread ? 1 : -1
+        )
         this.filter_nameSent = 'Фильтры'
       }
+      if (filter.title == 'Непрочитанные')
+        this.usersSentFiltered = this.usersSent.filter(
+          (user) => user.unread === true
+        )
       if (filter.title == 'Избранные')
         this.usersSentFiltered = this.usersSent.filter(
           (user) => user.favorite === true
@@ -448,6 +518,12 @@ export default {
     openUserChat() {
       setTimeout(this.scrollToDown, 0)
     },
+    usersReceived(){
+      this.usersReceivedFiltered = this.usersReceived.sort((a, b) => (a.unread < b.unread ? 1 : -1));
+    },
+    usersSent(){
+      this.usersSentFiltered = this.usersSent.sort((a, b) => (a.unread < b.unread ? 1 : -1));
+    }
   },
 }
 </script>

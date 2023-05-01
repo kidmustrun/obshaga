@@ -10,7 +10,7 @@
             max-width="200px"
           >
             <v-img
-              :src="src"
+              :src="srcFull"
               alt="Avatar"
               class="ratio ratio-1x1"
               width="100%"
@@ -20,18 +20,22 @@
         </div>
         <div class="col-md-9 order-lg-1 order-last">
           <div class="name mb-2">
-            {{ name }} {{ surname }}, {{ date }}
+            {{ name }}, {{ year }}
             <span v-if="unread" class="unread">●</span>
           </div>
           <div class="about mb-2">{{ about }}</div>
-          <div class="mb-2">
-            <v-icon left>mdi-school</v-icon>{{ faculty }}, {{ course }} курс
+          <div class="mb-2 d-flex align-items-start">
+            <v-icon left>mdi-school</v-icon>
+            <div>
+              {{ faculty.slice(0, -1) }}<br />Направление:
+              {{ direction.toLowerCase() }}
+            </div>
           </div>
 
           <div class="mb-2">
             <v-icon left>mdi-magnify</v-icon>
             <v-chip
-              v-for="(filter, index) in filters"
+              v-for="(filter, index) in filtersColors"
               :key="index"
               :style="{
                 'background-color': filter.color,
@@ -106,6 +110,28 @@
 <script>
 export default {
   name: 'Card',
+  computed: {
+    base_url() {
+      return this.$store.state.url_base
+    },
+    srcFull() {
+      if (this.src) return `${this.base_url}${this.src}`
+      else return require('~/assets/no_photo.svg')
+    },
+    filtersAll() {
+      return [...this.$store.state.filters]
+    },
+    filtersColors() {
+      const arr = []
+      if (this.filters)
+        this.filters.forEach((value) => {
+          this.filtersAll.forEach((filter) => {
+            if (value == filter.name) arr.push(filter)
+          })
+        })
+      return arr
+    },
+  },
   data() {
     return {
       upBtnChat: false,
@@ -118,9 +144,9 @@ export default {
     'src',
     'name',
     'surname',
-    'date',
+    'year',
     'about',
-    'course',
+    'direction',
     'faculty',
     'filters',
     'favorite',

@@ -172,7 +172,7 @@
         </button>
       </div>
     </v-card>
-    <Loader />
+    <Loader v-else />
     <OverlayLoader />
   </div>
 </template>
@@ -258,6 +258,7 @@ export default {
         interests: { interests: interestsChoosed },
         image: this.file,
       })
+      this.$store.commit('SET_USERS', [])
     },
   },
   created() {

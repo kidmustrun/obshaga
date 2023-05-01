@@ -22,7 +22,11 @@
 html{
     overflow: auto !important;
 }
+.chat_panel .v-navigation-drawer__content{
+  margin-top: 64px;
+}
 .v-navigation-drawer__content {
+
   height: calc(100vh - 64px) !important;
   z-index: 1000 !important;
 }
