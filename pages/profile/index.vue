@@ -66,7 +66,7 @@
               solo
               dense
               chips
-              hide-details
+              :rules="validationRules"
               flat
               small-chips
               hide-selected
@@ -165,7 +165,7 @@
         <button class="link_pink">удалить аккаунт</button>
         <button
           class="button_pink"
-          :disabled="!this.change"
+          :disabled="!this.change || !this.changeFromInterests"
           @click="updateUser"
         >
           редактировать
@@ -188,6 +188,7 @@ export default {
   middleware: 'auth',
   data: () => ({
     file: null,
+    changeFromInterests: true,
     content: '',
     options: {
       year: 'numeric',
@@ -244,6 +245,17 @@ export default {
     logout() {
       this.$store.dispatch('logout')
     },
+    checkInterests() {
+      if (!this.interests[0]) {
+        this.change = false
+        this.changeFromInterests = false
+        return 'Выберите хотя бы один фильтр'
+      } else {
+        this.change = true
+        this.changeFromInterests = true
+        return true
+      }
+    },
     updateUser() {
       const interestsChoosed = []
       this.interests.forEach((value) => {
@@ -265,8 +277,10 @@ export default {
     this.$store.dispatch('getUser')
     this.$store.dispatch('getFilters')
   },
-
   computed: {
+    validationRules() {
+      return this.checkInterests ? [this.checkInterests] : []
+    },
     filters() {
       return [...this.$store.state.filters]
     },

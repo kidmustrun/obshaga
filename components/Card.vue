@@ -59,15 +59,42 @@
               <span v-if="upBtnChat">написать </span
               ><v-icon> mdi-forum-outline </v-icon>
             </v-btn>
-            <v-btn
-              class="btn_close"
-              :class="{ button_active: upBtnClose }"
-              @mouseover="upBtnClose = true"
-              @mouseleave="upBtnClose = false"
-            >
-              <v-icon> mdi-close </v-icon
-              ><span v-if="upBtnClose"> удалить</span>
-            </v-btn>
+                        <v-dialog v-model="clickBtnClose" width="500">
+              <template v-slot:activator="{ on, attrs }">
+                <v-btn
+                  class="btn_close"
+                  :class="{ button_active: upBtnClose }"
+                  @mouseover="upBtnClose = true"
+                  @mouseleave="upBtnClose = false"
+                  v-bind="attrs"
+                  v-on="on"
+                >
+                  <v-icon> mdi-close </v-icon
+                  ><span v-if="upBtnClose"> удалить</span>
+                </v-btn>
+              </template>
+
+              <v-card>
+                <v-card-title class="grey lighten-2 text-wrap">
+                  Вы уверены?
+                </v-card-title>
+                <v-card-text>
+                  Если удалить этого пользователя, он больше не будет
+                  отображаться в Ваших симпатиях.</v-card-text
+                >
+                <v-divider></v-divider>
+
+                <v-card-actions>
+                  <v-spacer></v-spacer>
+                  <v-btn color="primary" text @click="clickBtnClose = false">
+                    Отмена
+                  </v-btn>
+                  <v-btn color="primary" text @click="clickBtnClose = false">
+                    Удалить
+                  </v-btn>
+                </v-card-actions>
+              </v-card>
+            </v-dialog>
           </div>
         </div>
         <div class="col-2 col-md-1 order-lg-last order-3">
@@ -86,7 +113,7 @@
                   Жалоба
                 </v-card-title>
                 <v-card-text>
-                  Вы уверены, что хотите пожаловаться на этого пользователя? Он будет удален из Ваших симпатий, а жалоба будет отправлена администратору.</v-card-text
+                  Вы уверены, что хотите пожаловаться на этого пользователя? Он будет удален из Ваших симпатий и списка чатов, а жалоба будет отправлена администратору.</v-card-text
                 >
                 <v-divider></v-divider>
 
@@ -136,7 +163,8 @@ export default {
     return {
       upBtnChat: false,
       upBtnClose: false,
-      clickBtnClaim: false
+      clickBtnClaim: false,
+      clickBtnClose: false,
     }
   },
   props: [

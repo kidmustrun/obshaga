@@ -35,6 +35,9 @@ export default {
     this.$store.dispatch('getAllProfiles')
     this.$store.dispatch('getFilters')
   },
+  destroyed(){
+    this.$store.commit('SET_USERS', [])
+  },
   computed: {
     users() {
       return this.$store.state.users
