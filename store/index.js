@@ -5,7 +5,7 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://ec72-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://e743-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
@@ -15,7 +15,7 @@ export const state = () => ({
   overlay: false,
   loader: false,
   auth: false,
-  url_base: 'https://ec72-95-165-9-250.ngrok-free.app',
+  url_base: 'https://e743-95-165-9-250.ngrok-free.app',
   filters: [],
   interests: [],
   genders: [],
@@ -36,6 +36,9 @@ export const getters = {
   USER_ID: (state) => {
     return state.user.id
   },
+  DELETE_USER_WITH_LIKE: state => id => {
+    return state.users.filter((user) => user.id != id)
+  }
 }
 export const mutations = {
   SET_TOKEN: (state, payload) => {
@@ -246,6 +249,7 @@ export const actions = {
         }
       )
       .then(() => {
+        context.commit('SET_USERS', context.getters.DELETE_USER_WITH_LIKE(id))
         context.dispatch('getAllProfiles')
         // context.dispatch('startChat', { id: id, message: message })
       })

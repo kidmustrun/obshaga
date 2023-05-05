@@ -423,21 +423,21 @@ export default {
   },
   computed: {
     usersSent() {
-      return [...this.$store.state.liked]
+      return [...this.$store.state.liked].reverse()
     },
     usersReceived() {
-      return [...this.$store.state.who_liked_me]
+      return [...this.$store.state.who_liked_me].reverse()
     },
     base_url() {
       return this.$store.state.url_base
     },
     users() {
-      return this.usersReceived.filter(function(obj) { return usersSent.indexOf(obj) == -1; });
+      return this.usersReceived.filter(a => this.usersSent.find(b => b.id === a.id) === undefined).concat(this.usersSent);
     },
   },
   methods: {
     fullSrc(userId) {
-      let user = this.users.find((user)=>user.id == userId)
+      let user = this.users.find((user) => user.id == userId)
       if (user.photo.place) return `${this.base_url}${user.photo.place}`
       else return require('~/assets/no_photo.svg')
     },
@@ -518,12 +518,16 @@ export default {
     openUserChat() {
       setTimeout(this.scrollToDown, 0)
     },
-    usersReceived(){
-      this.usersReceivedFiltered = this.usersReceived.sort((a, b) => (a.unread < b.unread ? 1 : -1));
+    usersReceived() {
+      this.usersReceivedFiltered = this.usersReceived.sort((a, b) =>
+        a.unread < b.unread ? 1 : -1
+      )
     },
-    usersSent(){
-      this.usersSentFiltered = this.usersSent.sort((a, b) => (a.unread < b.unread ? 1 : -1));
-    }
+    usersSent() {
+      this.usersSentFiltered = this.usersSent.sort((a, b) =>
+        a.unread < b.unread ? 1 : -1
+      )
+    },
   },
 }
 </script>
