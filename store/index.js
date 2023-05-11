@@ -5,17 +5,19 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://e743-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://13e7-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
+  admin: false,
+  moderator: false,
   faculties: [],
   directions: [],
   error: '',
   overlay: false,
   loader: false,
   auth: false,
-  url_base: 'https://e743-95-165-9-250.ngrok-free.app',
+  url_base: 'https://13e7-95-165-9-250.ngrok-free.app',
   filters: [],
   interests: [],
   genders: [],
@@ -36,9 +38,9 @@ export const getters = {
   USER_ID: (state) => {
     return state.user.id
   },
-  DELETE_USER_WITH_LIKE: state => id => {
+  DELETE_USER_WITH_LIKE: (state) => (id) => {
     return state.users.filter((user) => user.id != id)
-  }
+  },
 }
 export const mutations = {
   SET_TOKEN: (state, payload) => {
@@ -46,6 +48,12 @@ export const mutations = {
   },
   SET_AUTH: (state, payload) => {
     state.auth = payload
+  },
+  SET_ADMIN: (state, payload) => {
+    state.admin = payload
+  },
+  SET_MODERATOR: (state, payload) => {
+    state.moderator = payload
   },
   DELETE_TOKEN: (state) => {
     Cookies.remove('token')
@@ -138,6 +146,13 @@ export const actions = {
       .then((response) => {
         context.commit('SET_TOKEN', response[1])
         context.commit('SET_AUTH', true)
+        // if(response[2])
+        // if(response[2].role ==='admin'){
+        //   context.commit('SET_ADMIN', true)
+        // }
+        // if(response[2].role ==='moderator'){
+        //   context.commit('SET_MODERATOR', true)
+        // }
         context.commit('SET_OVERLAY', false)
         this.$router.push('/')
       })
@@ -153,6 +168,8 @@ export const actions = {
       })
       .then(() => {
         context.commit('SET_AUTH', false)
+        context.commit('SET_ADMIN', false)
+        context.commit('SET_MODERATOR', false)
         context.commit('DELETE_TOKEN')
         this.$router.push('/auth').catch(() => {})
       })
@@ -182,7 +199,6 @@ export const actions = {
       )
     }
     if (user.interests) {
-      console.log(user)
       const responseInterests = await this.$axios.$post(
         `${url_base}api/v1/user/updateInterests`,
         user.interests,
@@ -287,7 +303,6 @@ export const actions = {
         }
       )
       .then((response) => {
-        console.log(response)
         context.commit('SET_LIKED', response)
         context.commit('SET_LOADER', false)
       })
@@ -303,9 +318,56 @@ export const actions = {
         }
       )
       .then((response) => {
-        console.log(response)
         context.commit('SET_WHO_LIKED_ME', response)
         context.commit('SET_LOADER', false)
+      })
+  },
+  async deleteLike(context, {liked, who_was_liked}){
+    this.$axios
+      .$post(
+        `${url_base}api/v1/delLike`,
+        { liked: liked,
+          who_was_liked: who_was_liked },
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then((response) => {
+        location.reload()
+      })
+  },
+  async makeLikeFavorite(context, id){
+    this.$axios
+    .$post(
+      `${url_base}api/v1/makeLikeFavorite/${id}`,
+      {},
+      {
+        headers: { Authorization: Cookies.get('token') },
+      }
+    )
+    
+  },
+  async deleteLikeFavorite(context, id){
+    this.$axios
+    .$post(
+      `${url_base}api/v1/delFavoriteLike/${id}`,
+      {},
+      {
+        headers: { Authorization: Cookies.get('token') },
+      }
+    )
+  },
+  async createReport(context, { text, id }) {
+    this.$axios
+      .$post(
+        `${url_base}api/v1/createReport/${id}`,
+        { text: text },
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then((response) => {
+        location.reload()
       })
   },
 }

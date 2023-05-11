@@ -16,6 +16,7 @@
         :direction="user.direction"
         :faculty="user.faculty"
         :filters="user.interests"
+        :gender="user.gender"
       />
     {{ users }}
     </div>

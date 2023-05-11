@@ -59,6 +59,7 @@ export default {
   head: {
     title: 'Общага | Регистрация',
   },
+  middleware: 'user',
   data() {
     return {
       gender: 'female',

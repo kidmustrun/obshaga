@@ -74,7 +74,8 @@ export default {
   head: {
     title: 'Общага | О приложении',
   },
-  layout: 'register'
+  layout: 'register',
+  middleware: 'user',
 }
 </script>
 <style scoped>

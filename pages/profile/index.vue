@@ -209,6 +209,9 @@ export default {
     value: null,
     gendersData: [],
   }),
+  destroyed(){
+    this.$store.commit('SET_USER', {} )
+  },
   methods: {
     remove(item) {
       const index = this.interests.indexOf(item.name)
@@ -295,7 +298,6 @@ export default {
       return this.$store.state.url_base
     },
     user() {
-      console.log(this.$store.getters.USER)
       return { ...this.$store.getters.USER }
     },
     interests: {

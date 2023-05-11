@@ -136,6 +136,7 @@ export default {
   head: {
     title: 'Общага | Регистрация',
   },
+  middleware: 'user',
   layout: 'register',
   data: () => ({
     file: null,
@@ -212,7 +213,6 @@ export default {
       })
       const formData = new FormData()
       formData.append('image', this.file)
-      console.log(this.file)
       this.$store.dispatch('registerUser', [
         {
           login: this.user.login,

@@ -53,6 +53,7 @@ export default {
   head: {
     title: 'Общага | Авторизация',
   },
+  middleware: 'user',
   data() {
     return {
       login: '',

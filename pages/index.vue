@@ -138,11 +138,13 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          <div class="pt-4 p-3" v-if="usersReceivedFiltered[0]">
+          <div class="pt-4 p-3" v-if="usersReceivedFiltered[0] && userIm[0]">
             <Card
               v-for="user in usersReceivedFiltered"
               :key="user.id"
               :id="user.id"
+              :liked="user.id"
+              :who_was_liked="userIm[0].id"
               :src="user.photo.place"
               :name="user.name"
               :surname="user.surname"
@@ -151,10 +153,11 @@
               :direction="user.direction"
               :faculty="user.faculty"
               :filters="user.interests"
-              :favorite="user.favorite"
+              :favorite="user.favourite"
               :unread="user.unread"
+              :gender="user.gender"
+              :like_id="user.like_id"
               @openParentChat="openUserChatMethod"
-              @changeFavorite="changeFavoriteReceivedMethod"
             />
           </div>
           <Loader v-else />
@@ -188,12 +191,14 @@
               </v-list-item>
             </v-list>
           </v-menu>
-          <div class="pt-4 p-3" v-if="usersSentFiltered[0]">
+          <div class="pt-4 p-3" v-if="usersSentFiltered[0] && userIm[0]">
             <Card
               v-for="user in usersSentFiltered"
               :key="user.id"
               :id="user.id"
               :src="user.photo.place"
+              :liked="userIm[0].id"
+              :who_was_liked="user.id"
               :name="user.name"
               :surname="user.surname"
               :year="user.year"
@@ -202,9 +207,10 @@
               :faculty="user.faculty"
               :filters="user.interests"
               :unread="user.unread"
-              :favorite="user.favorite"
+              :favorite="user.favourite"
+              :gender="user.gender"
+              :like_id="user.like_id"
               @openParentChat="openUserChatMethod"
-              @changeFavorite="changeFavoriteSentMethod"
             />
           </div>
           <Loader v-else />
@@ -218,6 +224,7 @@
 </template>
 
 <script>
+
 export default {
   name: 'IndexPage',
   head: {
@@ -280,10 +287,18 @@ export default {
     if (process.browser) window.addEventListener('resize', this.updateWidth)
     this.$store.dispatch('getWhoLikedMe')
     this.$store.dispatch('getLiked')
+    this.$store.dispatch('getUser')
     this.$store.dispatch('getFilters')
     this.$store.commit('SET_USERS', [])
   },
+  destroyed() {
+    this.$store.commit('SET_LIKED', [])
+    this.$store.commit('SET_WHO_LIKED_ME', [])
+  },
   computed: {
+    userIm() {
+      return this.$store.state.user
+    },
     usersSent() {
       return [...this.$store.state.liked].reverse()
     },
@@ -294,7 +309,9 @@ export default {
       return this.$store.state.url_base
     },
     users() {
-      return this.usersReceived.filter(a => this.usersSent.find(b => b.id === a.id) === undefined).concat(this.usersSent);
+      return this.usersReceived
+        .filter((a) => this.usersSent.find((b) => b.id === a.id) === undefined)
+        .concat(this.usersSent)
     },
   },
   methods: {
@@ -304,7 +321,6 @@ export default {
       else return require('~/assets/no_photo.svg')
     },
     makeFilterReceivedActive(filter) {
-      console.log('a')
       this.filtersReceived = this.filtersReceived.map((filter) => {
         filter.isActive = false
         return filter
@@ -312,9 +328,7 @@ export default {
       this.filtersReceived.find((item) => item.id === filter.id).isActive = true
       this.filter_nameReceived = filter.title
       if (filter.title == 'Все') {
-        this.usersReceivedFiltered = this.usersReceived.sort((a, b) =>
-          a.unread < b.unread ? 1 : -1
-        )
+        this.usersReceivedFiltered = this.usersReceived
         this.filter_nameReceived = 'Фильтры'
       }
       if (filter.title == 'Непрочитанные')
@@ -323,7 +337,7 @@ export default {
         )
       if (filter.title == 'Избранные')
         this.usersReceivedFiltered = this.usersReceived.filter(
-          (user) => user.favorite === true
+          (user) => user.favourite === true
         )
     },
     makeFilterSentActive(filter) {
@@ -334,9 +348,7 @@ export default {
       this.filtersSent.find((item) => item.id === filter.id).isActive = true
       this.filter_nameSent = filter.title
       if (filter.title == 'Все') {
-        this.usersSentFiltered = this.usersSent.sort((a, b) =>
-          a.unread < b.unread ? 1 : -1
-        )
+        this.usersSentFiltered = this.usersSent
         this.filter_nameSent = 'Фильтры'
       }
       if (filter.title == 'Непрочитанные')
@@ -345,7 +357,7 @@ export default {
         )
       if (filter.title == 'Избранные')
         this.usersSentFiltered = this.usersSent.filter(
-          (user) => user.favorite === true
+          (user) => user.favourite === true
         )
     },
     updateWidth() {
@@ -360,14 +372,6 @@ export default {
       this.updateWidth()
       if (this.width <= 768) this.chatOpen = false
       else this.chatOpen = true
-    },
-    changeFavoriteReceivedMethod(id) {
-      this.usersReceived.find((user) => user.id === id).favorite =
-        !this.usersReceived.find((user) => user.id === id).favorite
-    },
-    changeFavoriteSentMethod(id) {
-      this.usersSent.find((user) => user.id === id).favorite =
-        !this.usersSent.find((user) => user.id === id).favorite
     },
     scrollToDown() {
       const el = this.$el.querySelector('#chat')

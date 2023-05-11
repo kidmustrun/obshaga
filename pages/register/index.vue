@@ -164,6 +164,7 @@ export default {
   head: {
     title: 'Общага | Регистрация',
   },
+  middleware: 'user',
   data() {
     return {
       name: '',
@@ -212,7 +213,6 @@ export default {
           direction => {
            return direction.f_id == this.faculty}
         )
-        console.log(directionsFilteredTemp)
         return directionsFilteredTemp
       }
     },

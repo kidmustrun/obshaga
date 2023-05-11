@@ -21,17 +21,23 @@
         <div class="col-md-9 order-lg-1 order-last">
           <div class="name mb-2">{{ name }}, {{ date }}</div>
           <div class="about mb-2">{{ about }}</div>
-          <div class="mb-2 d-flex align-items-start">
-            <v-icon left>mdi-school</v-icon>
-            <div>
-              {{ faculty.slice(0, -1) }}<br />Направление:
-              {{ direction.toLowerCase() }}
-            </div>
-          </div>
-
           <div class="mb-2">
-            <v-icon left>mdi-magnify</v-icon>
-            <v-chip
+            <v-icon left>mdi-account</v-icon
+            ><v-chip
+              v-if="this.gender === 'female'"
+              style="background-color: #ff5a7b; color: #fff"
+              small
+              >женский</v-chip
+            ><v-chip
+              v-if="this.gender === 'male'"
+              style="background-color: #a35aff; color: #fff"
+              small
+              >мужской</v-chip
+            >
+          </div>
+          <div class="mb-2">
+            <v-icon left>mdi-magnify</v-icon
+            ><v-chip
               v-for="(filter, index) in filtersColors"
               :key="index"
               :style="{
@@ -45,6 +51,14 @@
               {{ filter.name }}
             </v-chip>
           </div>
+          <div class="d-flex align-items-start">
+            <v-icon left>mdi-school</v-icon>
+            <div>
+              {{ faculty.slice(0, -1) }}<br />Направление:
+              {{ direction.toLowerCase() }}
+            </div>
+          </div>
+
           <div class="buttons float-end">
             <v-dialog v-model="clickBtnChat" width="500">
               <template v-slot:activator="{ on, attrs }">
@@ -164,6 +178,19 @@
                 будет удален из Вашей ленты, а жалоба будет отправлена
                 администратору.</v-card-text
               >
+              <v-textarea
+                flat
+                solo
+                clearable
+                auto-grow
+                name="claim"
+                label="Жалоба..."
+                class="mt-2 ms-3"
+                v-model="claim"
+              >
+              </v-textarea>
+
+              <v-divider></v-divider>
               <v-divider></v-divider>
 
               <v-card-actions>
@@ -171,7 +198,14 @@
                 <v-btn color="primary" text @click="clickBtnClaim = false">
                   Отмена
                 </v-btn>
-                <v-btn color="primary" text @click="clickBtnClaim = false">
+                <v-btn
+                  color="primary"
+                  text
+                  @click="
+                    clickBtnClaim = false
+                    sendReport(id)
+                  "
+                >
                   Пожаловаться
                 </v-btn>
               </v-card-actions>
@@ -216,11 +250,16 @@ export default {
       clickBtnClose: false,
       clickBtnClaim: false,
       message: '',
+      claim: '',
     }
   },
   methods: {
     sendMatch(userId) {
       this.$store.dispatch('setLike', { id: userId, message: this.message })
+    },
+    sendReport(userId) {
+      this.$store.dispatch('createReport', { text: this.claim, id: userId })
+      this.claim = ''
     },
   },
   props: [
@@ -235,6 +274,7 @@ export default {
     'filters',
     'favorite',
     'unread',
+    'gender',
   ],
 }
 </script>
