@@ -24,6 +24,8 @@ export const state = () => ({
   about: '',
   liked: [],
   who_liked_me: [],
+  users_admin: [],
+  moderators: [],
 })
 export const getters = {
   TOKEN: () => {
@@ -99,6 +101,12 @@ export const mutations = {
   },
   SET_WHO_LIKED_ME: (state, payload) => {
     state.who_liked_me = payload
+  },
+  SET_USERS_ADMIN: (state, payload) => {
+    state.users_admin = payload
+  },
+  SET_MODERATORS: (state, payload) => {
+    state.moderators = payload
   },
 }
 export const actions = {
@@ -192,10 +200,7 @@ export const actions = {
     if (user.about) {
       const responseAbout = await this.$axios.$post(
         `${url_base}api/v1/user/updateAbout`,
-        user.about,
-        {
-          headers: { Authorization: Cookies.get('token') },
-        }
+        user.about
       )
     }
     if (user.interests) {
@@ -322,12 +327,11 @@ export const actions = {
         context.commit('SET_LOADER', false)
       })
   },
-  async deleteLike(context, {liked, who_was_liked}){
+  async deleteLike(context, { liked, who_was_liked }) {
     this.$axios
       .$post(
         `${url_base}api/v1/delLike`,
-        { liked: liked,
-          who_was_liked: who_was_liked },
+        { liked: liked, who_was_liked: who_was_liked },
         {
           headers: { Authorization: Cookies.get('token') },
         }
@@ -336,20 +340,17 @@ export const actions = {
         location.reload()
       })
   },
-  async makeLikeFavorite(context, id){
-    this.$axios
-    .$post(
+  async makeLikeFavorite(context, id) {
+    this.$axios.$post(
       `${url_base}api/v1/makeLikeFavorite/${id}`,
       {},
       {
         headers: { Authorization: Cookies.get('token') },
       }
     )
-    
   },
-  async deleteLikeFavorite(context, id){
-    this.$axios
-    .$post(
+  async deleteLikeFavorite(context, id) {
+    this.$axios.$post(
       `${url_base}api/v1/delFavoriteLike/${id}`,
       {},
       {
@@ -369,5 +370,27 @@ export const actions = {
       .then((response) => {
         location.reload()
       })
+  },
+  async getUsersAdmin(context) {
+    this.$axios
+      .$get(`${url_base}api/v1/admin/users`, {
+        headers: { Authorization: Cookies.get('token') },
+      })
+      .then((response) => context.commit('SET_USERS_ADMIN', response))
+      .catch(() => redirect('/auth'))
+  },
+  async getModerators(context) {
+    const response = await this.$axios.$get(
+      `${url_base}api/v1/admin/users/moderators`,
+      {
+        headers: { Authorization: Cookies.get('token') },
+      }
+    )
+    context.commit('SET_MODERATORS', response)
+  },
+  async registerModerator(context, data) {
+    this.$axios.$post(`${url_base}api/v1/admin/registerModerator`, data, {
+      headers: { Authorization: Cookies.get('token') },
+    }).then((response)=> location.reload())
   },
 }

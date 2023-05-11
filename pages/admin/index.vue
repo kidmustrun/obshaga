@@ -1,49 +1,112 @@
 <template>
-    <div class="mt-3">
-    <h3 class="ms-3">Пользователи</h3>
-  <v-data-table
-    :headers="headers"
-    :items="users"
-    :items-per-page="10"
-    loading
-    loading-text="Загрузка данных о пользователях..."
-    class="elevation-1 mt-2"
-    :footer-props="{
-      'items-per-page-all-text': 'Все',
-      'items-per-page-text': 'Отображать строк: ',
-      'page-text': ''
-    }"
-  >
-    <template v-slot:item.claims="{ item }">
-      <v-chip :style="{ 'background-color': getColor(item.claims) }" dark>
-        {{ item.claims }}
-      </v-chip>
-    </template>
-    <template v-slot:item.photo="{ item }">
-   <a :href="item.photo" target="_blank">Фотография</a>
-    </template>
-    <template v-slot:item.moderator="{ item }">
-        <v-icon v-if="item.moderator" color="#00e600">
-        mdi-check
-      </v-icon>
-      <v-icon v-else color="#ff0000">
-        mdi-close
-      </v-icon>
-    </template>
-    <template v-slot:item.actions="{ item }">
-      <v-icon v-if="!item.moderator" small class="mr-2 check" @click="makeUserModerator(item)" title="Назначить модератором">
-        mdi-lock-check-outline
-      </v-icon>
-      <v-icon v-else small class="mr-2 close" @click="removeUserModerator(item)" title="Удалить права модератора">
-        mdi-lock-remove-outline
-      </v-icon>
-      <v-icon small class="close" @click="deleteUser(item)" title="Удалить анкету">
-        mdi-close
-      </v-icon>
-    </template>
-    </v-data-table
-  >
-</div>
+  <div class="mt-3">
+    <v-tabs v-model="tab">
+      <v-tab>Пользователи</v-tab>
+      <v-tab>Регистрация модератора</v-tab>
+    </v-tabs>
+    <v-tabs-items v-model="tab">
+      <v-tab-item>
+        <v-data-table
+          :headers="headers"
+          :items="users"
+          :items-per-page="10"
+          loading
+          loading-text="Загрузка данных о пользователях..."
+          class="elevation-1 mt-2"
+          :footer-props="{
+            'items-per-page-all-text': 'Все',
+            'items-per-page-text': 'Отображать строк: ',
+            'page-text': '',
+          }"
+        >
+          <template v-slot:item.claims="{ item }">
+            <v-chip :style="{ 'background-color': getColor(item.claims) }" dark>
+              {{ item.claims }}
+            </v-chip>
+          </template>
+          <template v-slot:item.date="{ item }">
+            {{ new Date(item.birth_date).toLocaleString('ru', options) }}
+
+          </template>
+          
+          <template v-slot:item.moderator="{ item }">
+            <v-icon v-if="item.moderator" color="#00e600"> mdi-check </v-icon>
+            <v-icon v-else color="#ff0000"> mdi-close </v-icon>
+          </template>
+          <template v-slot:item.actions="{ item }">
+            <v-icon
+              small
+              class="close"
+              @click="deleteUser(item)"
+              title="Удалить анкету"
+            >
+              mdi-close
+            </v-icon>
+          </template>
+        </v-data-table>
+      </v-tab-item>
+      <v-tab-item class="container">
+        <v-form ref="form">
+          <v-text-field
+            v-model="first_name"
+            label="Имя"
+            required
+          ></v-text-field>
+          <v-text-field
+            v-model="last_name"
+            label="Фамилия"
+            required
+          ></v-text-field>
+          <v-text-field v-model="login" label="Логин" required></v-text-field>
+          <v-text-field
+            v-model="password"
+            label="Пароль"
+            type="password"
+            required
+          ></v-text-field>
+          <v-radio-group v-model="gender">
+            <v-radio value="male" label="Мужской"></v-radio>
+            <v-radio value="female" label="Женский"></v-radio>
+          </v-radio-group>
+          <v-menu
+            ref="menu"
+            v-model="menu"
+            :close-on-content-click="false"
+            :nudge-right="40"
+            lazy
+            transition="scale-transition"
+            offset-y
+            full-width
+            min-width="290px"
+          >
+            <template v-slot:activator="{ on }">
+              <v-text-field
+                v-model="date"
+                label="Дата рождения"
+                prepend-icon="mdi-calendar"
+                readonly
+                v-on="on"
+              ></v-text-field>
+            </template>
+            <v-date-picker
+              ref="picker"
+              v-model="date"
+              :max="new Date().toISOString().substr(0, 10)"
+              min="1950-01-01"
+              @change="save"
+            ></v-date-picker>
+          </v-menu>
+
+          <v-btn
+            elevation="2"
+            class="float-end"
+            @click="makeUserModerator"
+          >зарегистрировать</v-btn>
+          <div class="clearfix"></div>
+        </v-form>
+      </v-tab-item>
+    </v-tabs-items>
+  </div>
 </template>
 
 <script>
@@ -53,26 +116,62 @@ export default {
   head: {
     title: 'Общага | Панель администратора',
   },
-  middleware: ['auth','admin'],
+  middleware: ['auth'],
+  created() {
+    this.$store.dispatch('getModerators')
+    this.$store.dispatch('getUsersAdmin')
+  },
   methods: {
+    save (date) {
+        this.$refs.menu.save(date)
+      },
     getColor(claims) {
       if (claims >= 3) return 'red'
       else if (claims >= 1 && claims < 3) return 'orange'
       else return 'green'
     },
-    makeUserModerator(user){
-
+    makeUserModerator() {
+      this.$store.dispatch('registerModerator', {
+        login: this.login,
+        first_name: this.first_name,
+        password: this.password,
+        password_confirmation: this.password,
+        last_name: this.last_name,
+        second_name: 'Отчество',
+        gender: this.gender,
+        birth_date: this.date,
+      })
     },
-    removeUserModerator(user){
-
+    removeUserModerator(user) {},
+    deleteUser(user) {},
+  },
+  computed: {
+    users() {
+      return [...this.$store.state.moderators].concat([
+        ...this.$store.state.users_admin,
+      ])
     },
-    deleteUser(user){
-
-    }
+    moderators() {
+      return [...this.$store.state.moderators]
+    },
   },
   data() {
     return {
+      tab: null,
+      login: '',
+      first_name: '',
+      last_name: '',
+      password: '',
+      activePicker: null,
+      date: null,
+      menu: false,
+      gender: 'male',
       headers: [
+        {
+          text: 'ID',
+          align: 'start',
+          value: 'id',
+        },
         {
           text: 'Имя',
           align: 'start',
@@ -83,56 +182,23 @@ export default {
           align: 'start',
           value: 'last_name',
         },
-        { text: 'Возраст', value: 'year' },
-        { text: 'Группа', value: 'group' },
-        { text: 'Факультет', value: 'faculty' },
-        { text: 'Направление', value: 'direction' },
-        { text: 'О себе', value: 'about' },
-        { text: 'Фото', value: 'photo' },
-        { text: 'Жалобы', value: 'claims' },
+        {
+          text: 'Пол',
+          align: 'start',
+          value: 'gender',
+        },
+        { text: 'Дата рождения', value: 'birth_date' },
+        { text: 'Логин', value: 'login' },
         { text: 'Модератор', value: 'moderator' },
         { text: 'Действия', value: 'actions', sortable: false },
       ],
-      users: [
-        {
-          first_name: 'Ирина',
-          last_name: 'Громова',
-          year: 21,
-          group: '191-321',
-          faculty: 'sfsfa',
-          direction: 'fdsdfsf',
-          claims: 3,
-          about: 'обо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвыобо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвы',
-          photo: 'https://cdna.artstation.com/p/assets/images/images/050/089/394/large/steven-lo-ji-1.jpg',
-          moderator: false
-        },
-        {
-          first_name: 'Ирина',
-          last_name: 'Громова',
-          year: 21,
-          group: '191-321',
-          faculty: 'sfsfa',
-          direction: 'fdsdfsf',
-          claims: 0,
-          about: 'обо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвыобо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвы',
-          photo: 'https://cdna.artstation.com/p/assets/images/images/050/089/394/large/steven-lo-ji-1.jpg',
-          moderator: true
-        },
-        {
-          first_name: 'Ирина',
-          last_name: 'Громова',
-          year: 21,
-          group: '191-321',
-          faculty: 'sfsfa',
-          direction: 'fdsdfsf',
-          claims: 2,
-          about: 'обо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвыобо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвы',
-          photo: 'https://cdna.artstation.com/p/assets/images/images/050/089/394/large/steven-lo-ji-1.jpg',
-          moderator: false
-        },
-      ],
     }
   },
+  watch: {
+      menu (val) {
+        val && setTimeout(() => (this.activePicker = 'YEAR'))
+      },
+    },
 }
 </script>
 <style scoped>
