@@ -24,7 +24,7 @@
               {{ item.claims }}
             </v-chip>
           </template>
-          <template v-slot:item.date="{ item }">
+          <template v-slot:item.birth_date="{ item }">
             {{ new Date(item.birth_date).toLocaleString('ru', options) }}
 
           </template>
@@ -37,7 +37,7 @@
             <v-icon
               small
               class="close"
-              @click="deleteUser(item)"
+              @click="deleteUser(item.id)"
               title="Удалить анкету"
             >
               mdi-close
@@ -143,7 +143,9 @@ export default {
       })
     },
     removeUserModerator(user) {},
-    deleteUser(user) {},
+    deleteUser(id) {
+      this.$store.dispatch('deleteUserAdmin', id)
+    },
   },
   computed: {
     users() {
@@ -157,6 +159,11 @@ export default {
   },
   data() {
     return {
+      options: {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    },
       tab: null,
       login: '',
       first_name: '',

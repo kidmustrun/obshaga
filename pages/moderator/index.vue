@@ -15,30 +15,36 @@
           loading-text="Загрузка данных о пользователях..."
           class="elevation-1 mt-2"
           :footer-props="{
-      'items-per-page-all-text': 'Все',
-      'items-per-page-text': 'Отображать строк: ',
-      'page-text': ''
-    }"
+            'items-per-page-all-text': 'Все',
+            'items-per-page-text': 'Отображать строк: ',
+            'page-text': '',
+          }"
         >
           <template v-slot:item.claims="{ item }">
             <v-chip :style="{ 'background-color': getColor(item.claims) }" dark>
               {{ item.claims }}
             </v-chip>
           </template>
-          <template v-slot:item.photo="{ item }">
-            <a :href="item.photo" target="_blank">Фотография</a>
+          <template v-slot:item.birth_date="{ item }">
+            {{ new Date(item.birth_date).toLocaleString('ru', options) }}
+
+          </template>
+          
+          <template v-slot:item.moderator="{ item }">
+            <v-icon v-if="item.moderator" color="#00e600"> mdi-check </v-icon>
+            <v-icon v-else color="#ff0000"> mdi-close </v-icon>
           </template>
           <template v-slot:item.actions="{ item }">
             <v-icon
               small
-              class="block"
-              @click="blockUser(item)"
+              class="close"
+              @click="blockUser(item.id)"
               title="Заблокировать анкету"
             >
               mdi-block-helper
             </v-icon>
-          </template></v-data-table
-        >
+          </template>
+        </v-data-table>
       </v-tab-item>
       <v-tab-item>
         <v-data-table
@@ -49,24 +55,19 @@
           loading-text="Загрузка данных о заявках..."
           class="elevation-1 mt-2"
           :footer-props="{
-      'items-per-page-all-text': 'Все',
-      'items-per-page-text': 'Отображать строк: ',
-      'page-text': ''
-    }"
+            'items-per-page-all-text': 'Все',
+            'items-per-page-text': 'Отображать строк: ',
+            'page-text': '',
+          }"
         >
-          <template v-slot:item.claims="{ item }">
-            <v-chip :style="{ 'background-color': getColor(item.claims) }" dark>
-              {{ item.claims }}
-            </v-chip>
-          </template>
           <template v-slot:item.photo="{ item }">
             <a :href="item.photo" target="_blank">Фотография</a>
           </template>
           <template v-slot:item.actions="{ item }">
             <v-icon
               small
-              class="mr-2 check"
-              @click="approveUser(item)"
+              class="check"
+              @click="approveUser(item.id)"
               title="Одобрить заявку"
             >
               mdi-check
@@ -91,18 +92,28 @@
           loading-text="Загрузка данных о жалобах..."
           class="elevation-1 mt-2"
           :footer-props="{
-      'items-per-page-all-text': 'Все',
-      'items-per-page-text': 'Отображать строк: ',
-      'page-text': ''
-    }"
+            'items-per-page-all-text': 'Все',
+            'items-per-page-text': 'Отображать строк: ',
+            'page-text': '',
+          }"
         >
-        <template v-slot:item.photo="{ item }">
-            <a :href="item.photo" target="_blank">Фотография</a>
-          </template>
           <template v-slot:item.claims="{ item }">
             <v-chip :style="{ 'background-color': getColor(item.claims) }" dark>
               {{ item.claims }}
             </v-chip>
+          </template>
+          <template v-slot:item.photo="{ item }">
+            <a :href="item.photo" target="_blank">Фотография</a>
+          </template>
+          <template v-slot:item.actions="{ item }">
+            <v-icon
+              small
+              class="block"
+              @click="blockUser(item)"
+              title="Заблокировать анкету"
+            >
+              mdi-block-helper
+            </v-icon>
           </template></v-data-table
         >
       </v-tab-item>
@@ -117,20 +128,39 @@ export default {
   head: {
     title: 'Общага | Панель модератора',
   },
-  // middleware: ['auth','moderator'],
+  middleware: ['auth'],
+  created() {
+    this.$store.dispatch('getUsersAdmin')
+    this.$store.dispatch('getRequests')
+    this.$store.dispatch('getClaims')
+  },
   methods: {
     getColor(claims) {
       if (claims >= 3) return 'red'
       else if (claims >= 1 && claims < 3) return 'orange'
       else return 'green'
     },
-    approveUser(user) {},
-    blockUser(user) {},
+    approveUser(id) {
+      this.$store.dispatch('approveUser', id)
+    },
+    blockUser(id) {
+      this.$store.dispatch('blockUser', id)
+    },
   },
   data() {
     return {
       tab: null,
+      options: {
+      year: 'numeric',
+      month: 'numeric',
+      day: 'numeric',
+    },
       headersUsers: [
+        {
+          text: 'ID',
+          align: 'start',
+          value: 'id',
+        },
         {
           text: 'Имя',
           align: 'start',
@@ -141,13 +171,13 @@ export default {
           align: 'start',
           value: 'last_name',
         },
-        { text: 'Возраст', value: 'year' },
-        { text: 'Группа', value: 'group' },
-        { text: 'Факультет', value: 'faculty' },
-        { text: 'Направление', value: 'direction' },
-        { text: 'О себе', value: 'about' },
-        { text: 'Фото', value: 'photo' },
-        { text: 'Жалобы', value: 'claims' },
+        {
+          text: 'Пол',
+          align: 'start',
+          value: 'gender',
+        },
+        { text: 'Дата рождения', value: 'birth_date' },
+        { text: 'Логин', value: 'login' },
         { text: 'Действия', value: 'actions', sortable: false },
       ],
       headersRequests: [
@@ -170,6 +200,11 @@ export default {
         { text: 'Действия', value: 'actions', sortable: false },
       ],
       headersClaims: [
+      {
+          text: 'ID нарушителя',
+          align: 'start',
+          value: 'intruder',
+        },
         {
           text: 'Имя',
           align: 'start',
@@ -180,89 +215,33 @@ export default {
           align: 'start',
           value: 'last_name',
         },
-        { text: 'Возраст', value: 'year' },
-        { text: 'Группа', value: 'group' },
-        { text: 'Факультет', value: 'faculty' },
-        { text: 'Направление', value: 'direction' },
-        { text: 'О себе', value: 'about' },
-        { text: 'Фото', value: 'photo' },
-        { text: 'Жалоба', value: 'claim' },
+        {
+          text: 'ID отправившего жалобу',
+          align: 'start',
+          value: 'complaining',
+        },
+        { text: 'Жалоба', value: 'text' },
       ],
-      users: [
-        {
-          first_name: 'Ирина',
-          last_name: 'Громова',
-          year: 21,
-          group: '191-321',
-          faculty: 'sfsfa',
-          direction: 'fdsdfsf',
-          claims: 3,
-          about:
-            'обо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвыобо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвы',
-          photo:
-            'https://cdna.artstation.com/p/assets/images/images/050/089/394/large/steven-lo-ji-1.jpg',
-        },
-      ],
-      requests: [
-        {
-          first_name: 'Ирина',
-          last_name: 'Громова',
-          year: 21,
-          group: '191-321',
-          faculty: 'sfsfa',
-          direction: 'fdsdfsf',
-          about:
-            'обо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвыобо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвы',
-          photo:
-            'https://cdna.artstation.com/p/assets/images/images/050/089/394/large/steven-lo-ji-1.jpg',
-        },
-        {
-          first_name: 'Ирина2',
-          last_name: 'Громова2',
-          year: 21,
-          group: '191-321',
-          faculty: 'sfsfa',
-          direction: 'fdsdfsf',
-          about:
-            'обо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвыобо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвы',
-          photo:
-            'https://cdna.artstation.com/p/assets/images/images/050/089/394/large/steven-lo-ji-1.jpg',
-        },
-      ],
-      claims: [
-        {
-          first_name: 'Ирина',
-          last_name: 'Громова',
-          year: 21,
-          group: '191-321',
-          faculty: 'sfsfa',
-          direction: 'fdsdfsf',
-          about:
-            'обо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвыобо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвы',
-          photo:
-            'https://cdna.artstation.com/p/assets/images/images/050/089/394/large/steven-lo-ji-1.jpg',
-            claim: 'плохо себя ведет'
-        },
-        {
-          first_name: 'Ирина2',
-          last_name: 'Громова2',
-          year: 21,
-          group: '191-321',
-          faculty: 'sfsfa',
-          direction: 'fdsdfsf',
-          about:
-            'обо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвыобо мне раляляля тополя влалцуатдлцутавыь ылдтвп вп лывлпрвы',
-          photo:
-            'https://cdna.artstation.com/p/assets/images/images/050/089/394/large/steven-lo-ji-1.jpg',
-            claim: 'плохо себя ведет'
-        },
-      ],
+    }
+  },
+  computed: {
+    claims() {
+      return [...this.$store.state.claims]
+    },
+    requests() {
+      return [...this.$store.state.requests]
+    },
+    users(){
+      return [...this.$store.state.users_admin]
     }
   },
 }
 </script>
 <style scoped>
 .block:hover {
+  color: red;
+}
+.close:hover {
   color: red;
 }
 .check:hover {

@@ -5,7 +5,7 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://13e7-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://8b37-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
@@ -17,7 +17,7 @@ export const state = () => ({
   overlay: false,
   loader: false,
   auth: false,
-  url_base: 'https://13e7-95-165-9-250.ngrok-free.app',
+  url_base: 'https://8b37-95-165-9-250.ngrok-free.app',
   filters: [],
   interests: [],
   genders: [],
@@ -26,6 +26,8 @@ export const state = () => ({
   who_liked_me: [],
   users_admin: [],
   moderators: [],
+  claims: [],
+  requests: []
 })
 export const getters = {
   TOKEN: () => {
@@ -107,6 +109,12 @@ export const mutations = {
   },
   SET_MODERATORS: (state, payload) => {
     state.moderators = payload
+  },
+  SET_CLAIMS: (state, payload) => {
+    state.claims = payload
+  },
+  SET_REQUESTS: (state, payload) => {
+    state.requests = payload
   },
 }
 export const actions = {
@@ -393,4 +401,37 @@ export const actions = {
       headers: { Authorization: Cookies.get('token') },
     }).then((response)=> location.reload())
   },
+  async getRequests(context){
+    const response = await this.$axios.$get(
+      `${url_base}api/v1/admin/users/unapprovedProfiles`,
+      {
+        headers: { Authorization: Cookies.get('token') },
+      }
+    )
+    context.commit('SET_REQUESTS', response)
+  },
+  async approveUser(context, id) {
+    this.$axios.$post(`${url_base}api/v1/admin/approveProfile/${id}`, {}, {
+      headers: { Authorization: Cookies.get('token') },
+    }).then((response)=> location.reload())
+  },
+  async getClaims(context){
+    const response = await this.$axios.$get(
+      `${url_base}api/v1/admin/complaint`,
+      {
+        headers: { Authorization: Cookies.get('token') },
+      }
+    )
+    context.commit('SET_CLAIMS', response)
+  },
+  async deleteUserAdmin(context, id){
+    this.$axios.$post(`${url_base}api/v1/admin/users/delete/${id}`, {}, {
+      headers: { Authorization: Cookies.get('token') },
+    }).then((response)=> location.reload())
+  },
+  async blockUser(context, id){
+    this.$axios.$post(`${url_base}api/v1/admin/users/block/${id}`, {}, {
+      headers: { Authorization: Cookies.get('token') },
+    }).then((response)=> location.reload())
+  }
 }
