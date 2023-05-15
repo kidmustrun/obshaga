@@ -18,7 +18,6 @@
         :filters="user.interests"
         :gender="user.gender"
       />
-    {{ users }}
     </div>
     <Loader v-else />
   </div>

@@ -24,20 +24,20 @@
         <v-list nav dense>
           <v-list-item-group>
             <v-list-item
-              v-for="user in users"
+              v-for="user in chats"
               :key="user.id"
               two-line
               class="mx-auto"
               :class="{ chat_user_opened: userOpened.id === user.id }"
-              @click="openUserChatMethod(user.id)"
+              @click="openUserChatMethod(user.id, user.second_user)"
             >
               <v-list-item-avatar>
-                <v-img :src="fullSrc(user.id)"></v-img>
+                <v-img :src="fullSrc(user.photo.place)"></v-img>
               </v-list-item-avatar>
               <v-list-item-content class="ms-2">
                 <v-list-item-title
-                  >{{ user.name }}, {{ user.year }}
-                  <span v-if="user.unread" class="unread"
+                  >{{ user.second_user_name }}, {{ user.year }}
+                  <span v-if="!user.is_read" class="unread"
                     >●</span
                   ></v-list-item-title
                 >
@@ -47,19 +47,7 @@
                       ? { color: '#fff' }
                       : { color: '#000' },
                   ]"
-                  >Lorem ipsum dolor sit amet consectetur adipisicing elit.
-                  Inventore perferendis ipsam, odit provident velit consectetur,
-                  quam sint maiores illum ducimus illo, alias praesentium quia
-                  neque! Totam molestias error, ea soluta similique nam libero
-                  numquam blanditiis laboriosam deserunt! Eveniet minima
-                  doloremque neque facilis beatae dolorem, error distinctio et?
-                  Voluptates, minus veritatis! Enim dolores pariatur error,
-                  tenetur doloribus sunt ab nisi dolorum earum laudantium
-                  impedit perspiciatis praesentium et ut officia odio doloremque
-                  voluptas soluta quam molestias iste eius repellat? Asperiores
-                  provident minus atque iste? Eos a minima eveniet fugiat
-                  expedita magni sint ut maiores totam? Possimus voluptatum
-                  optio dolores ad fugiat nobis?</v-list-item-subtitle
+                  >{{ user.message_text }}</v-list-item-subtitle
                 >
               </v-list-item-content>
             </v-list-item>
@@ -79,21 +67,32 @@
             Назад
           </button>
         </div>
-        <div class="messages">
+        <div class="messages" v-if="chat[0]">
           <Message
-            :src="userOpened.photo.place"
-            :name="userOpened.name"
-            :time="'13:23'"
-            :message="'Lorem ipsumfb afjsfhusa jfbjsakf sdfsfaf sahdghasfgahgsf fdgasf fhf hdfghasfi dfhbhjfd hfd fhfsagfa'"
+            v-for="messageChat in chat"
+            :src="
+              messageChat.to_user_id === userIm[0].id
+                ? users.find((user) => user.id === messageChat.user_id).photo
+                    .place
+                : userIm[1].photo.place
+            "
+            :name="
+              messageChat.to_user_id === userIm[0].id
+                ? userOpened.name
+                : userIm[0].first_name
+            "
+            :time="messageChat.created_at"
+            :message="messageChat.message_text"
           />
         </div>
-        <div class="position-fixed fixed-bottom input-message py-4 px-5">
+        <div v-else>Загрузка...</div>
+        <div class="position-fixed fixed-bottom input-message py-2 px-3">
           <textarea
-            v-model="chat"
+            v-model="message"
             class="input_chat p-3"
             placeholder="Напишите сообщение..."
           ></textarea>
-          <button class="button_send">
+          <button class="button_send" @click="sendMessage">
             <img src="~/assets/arrow_send.svg" />
           </button>
         </div>
@@ -224,7 +223,7 @@
 </template>
 
 <script>
-
+import Pusher from 'pusher-js'
 export default {
   name: 'IndexPage',
   head: {
@@ -274,12 +273,13 @@ export default {
       },
     ],
     messages: [],
+    message: '',
     openUserChat: false,
     width: 0,
-    chat: '',
     userOpened: {},
     usersReceivedFiltered: [],
     usersSentFiltered: [],
+    chat_id: -1,
     filter_nameReceived: 'Фильтры',
     filter_nameSent: 'Фильтры',
   }),
@@ -290,6 +290,23 @@ export default {
     this.$store.dispatch('getUser')
     this.$store.dispatch('getFilters')
     this.$store.commit('SET_USERS', [])
+    this.$store.dispatch('getChats')
+  },
+  mounted() {
+    Pusher.logToConsole = true
+
+    const pusher = new Pusher('0edd8e2d1555ccc46f03', {
+      cluster: 'eu',
+    })
+
+    const channel = pusher.subscribe('chat')
+    channel.bind('App\\Events\\MessageSent', (data) => {
+      if (data.message.user_id != this.userIm[0].id)
+        this.chat.push(data.message)
+      this.message = this.message + ' '
+      this.message = this.message.slice(0, -1)
+      setTimeout(this.scrollToDown, 0)
+    })
   },
   destroyed() {
     this.$store.commit('SET_LIKED', [])
@@ -298,6 +315,9 @@ export default {
   computed: {
     userIm() {
       return this.$store.state.user
+    },
+    chat() {
+      return [...this.$store.state.chat].reverse()
     },
     usersSent() {
       return [...this.$store.state.liked].reverse()
@@ -308,6 +328,9 @@ export default {
     base_url() {
       return this.$store.state.url_base
     },
+    chats() {
+      return this.$store.state.chats
+    },
     users() {
       return this.usersReceived
         .filter((a) => this.usersSent.find((b) => b.id === a.id) === undefined)
@@ -315,9 +338,8 @@ export default {
     },
   },
   methods: {
-    fullSrc(userId) {
-      let user = this.users.find((user) => user.id == userId)
-      if (user.photo.place) return `${this.base_url}${user.photo.place}`
+    fullSrc(photo) {
+      if (photo) return `${this.base_url}${photo}`
       else return require('~/assets/no_photo.svg')
     },
     makeFilterReceivedActive(filter) {
@@ -364,9 +386,11 @@ export default {
       this.width = window.innerWidth
       if (this.openUserChat && this.width > 768) this.chatOpen = true
     },
-    openUserChatMethod(id) {
-      this.userOpened = this.users.find((user) => user.id === id)
-      this.users.find((user) => user.id === id).unread = false
+    openUserChatMethod(id, second_user_id) {
+      this.$store.dispatch('getChat', id)
+      this.chat_id = id
+      this.userOpened = this.users.find((user) => user.id === second_user_id)
+      // this.users.find((user) => user.id === id).unread = false
       // this.messages = this.user.messages;
       this.openUserChat = true
       this.updateWidth()
@@ -379,9 +403,27 @@ export default {
         el.scrollTop = el.scrollHeight
       }
     },
+    sendMessage() {
+      this.$store.dispatch('sendMessage', {
+        chat_id: this.chat_id,
+        message: this.message,
+      })
+      this.chat.push({
+        id: this.chat[this.chat.length - 1].id + 1,
+        message_text: this.message,
+        user_id: this.userIm[0].id,
+        to_user_id: this.userOpened.id,
+        created_at: new Date()
+      })
+      setTimeout(this.scrollToDown, 0)
+      this.message = ''
+    },
   },
   watch: {
     openUserChat() {
+      setTimeout(this.scrollToDown, 0)
+    },
+    chat() {
       setTimeout(this.scrollToDown, 0)
     },
     usersReceived() {
@@ -473,10 +515,11 @@ h1 {
 }
 .messages {
   margin-top: 16px;
-  margin-bottom: 32px;
+  margin-bottom: 90px;
 }
 .input-message {
   left: 256px;
+  background-color: #f5f5f5;
 }
 textarea {
   resize: none;

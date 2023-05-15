@@ -211,6 +211,7 @@ export default {
   }),
   destroyed(){
     this.$store.commit('SET_USER', {} )
+    this.$store.commit('SET_ERROR', '' )
   },
   methods: {
     remove(item) {

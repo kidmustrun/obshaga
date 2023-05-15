@@ -52,7 +52,7 @@
           :items="requests"
           :items-per-page="10"
           loading
-          loading-text="Загрузка данных о заявках..."
+          loading-text="Нет заявок"
           class="elevation-1 mt-2"
           :footer-props="{
             'items-per-page-all-text': 'Все',
@@ -61,7 +61,7 @@
           }"
         >
           <template v-slot:item.photo="{ item }">
-            <a :href="item.photo" target="_blank">Фотография</a>
+            <a :href="srcFull(item.photo.place)" target="_blank">Фотография</a>
           </template>
           <template v-slot:item.actions="{ item }">
             <v-icon
@@ -71,14 +71,6 @@
               title="Одобрить заявку"
             >
               mdi-check
-            </v-icon>
-            <v-icon
-              small
-              class="block"
-              @click="blockUser(item)"
-              title="Заблокировать заявку"
-            >
-              mdi-block-helper
             </v-icon>
           </template></v-data-table
         >
@@ -146,6 +138,10 @@ export default {
     blockUser(id) {
       this.$store.dispatch('blockUser', id)
     },
+    srcFull(src) {
+      if (src) return `${this.base_url}${src}`
+      else return require('~/assets/no_photo.svg')
+    },
   },
   data() {
     return {
@@ -191,7 +187,7 @@ export default {
           align: 'start',
           value: 'last_name',
         },
-        { text: 'Возраст', value: 'year' },
+        { text: 'Дата рождения', value: 'birth_date' },
         { text: 'Группа', value: 'group' },
         { text: 'Факультет', value: 'faculty' },
         { text: 'Направление', value: 'direction' },
@@ -233,7 +229,10 @@ export default {
     },
     users(){
       return [...this.$store.state.users_admin]
-    }
+    },
+    base_url() {
+      return this.$store.state.url_base
+    },
   },
 }
 </script>

@@ -5,7 +5,7 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://8b37-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://4739-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
@@ -17,7 +17,7 @@ export const state = () => ({
   overlay: false,
   loader: false,
   auth: false,
-  url_base: 'https://8b37-95-165-9-250.ngrok-free.app',
+  url_base: 'https://4739-95-165-9-250.ngrok-free.app',
   filters: [],
   interests: [],
   genders: [],
@@ -27,7 +27,9 @@ export const state = () => ({
   users_admin: [],
   moderators: [],
   claims: [],
-  requests: []
+  requests: [],
+  chats: [],
+  chat: [],
 })
 export const getters = {
   TOKEN: () => {
@@ -115,6 +117,12 @@ export const mutations = {
   },
   SET_REQUESTS: (state, payload) => {
     state.requests = payload
+  },
+  SET_CHATS: (state, payload) => {
+    state.chats = payload
+  },
+  SET_CHAT: (state, payload) => {
+    state.chat = payload
   },
 }
 export const actions = {
@@ -208,7 +216,10 @@ export const actions = {
     if (user.about) {
       const responseAbout = await this.$axios.$post(
         `${url_base}api/v1/user/updateAbout`,
-        user.about
+        user.about,
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
       )
     }
     if (user.interests) {
@@ -280,7 +291,7 @@ export const actions = {
       .then(() => {
         context.commit('SET_USERS', context.getters.DELETE_USER_WITH_LIKE(id))
         context.dispatch('getAllProfiles')
-        // context.dispatch('startChat', { id: id, message: message })
+        context.dispatch('startChat', { id: id, message: message })
       })
   },
   startChat(context, { id, message }) {
@@ -397,11 +408,13 @@ export const actions = {
     context.commit('SET_MODERATORS', response)
   },
   async registerModerator(context, data) {
-    this.$axios.$post(`${url_base}api/v1/admin/registerModerator`, data, {
-      headers: { Authorization: Cookies.get('token') },
-    }).then((response)=> location.reload())
+    this.$axios
+      .$post(`${url_base}api/v1/admin/registerModerator`, data, {
+        headers: { Authorization: Cookies.get('token') },
+      })
+      .then((response) => location.reload())
   },
-  async getRequests(context){
+  async getRequests(context) {
     const response = await this.$axios.$get(
       `${url_base}api/v1/admin/users/unapprovedProfiles`,
       {
@@ -411,11 +424,17 @@ export const actions = {
     context.commit('SET_REQUESTS', response)
   },
   async approveUser(context, id) {
-    this.$axios.$post(`${url_base}api/v1/admin/approveProfile/${id}`, {}, {
-      headers: { Authorization: Cookies.get('token') },
-    }).then((response)=> location.reload())
+    this.$axios
+      .$post(
+        `${url_base}api/v1/admin/approveProfile/${id}`,
+        {},
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then((response) => location.reload())
   },
-  async getClaims(context){
+  async getClaims(context) {
     const response = await this.$axios.$get(
       `${url_base}api/v1/admin/complaint`,
       {
@@ -424,14 +443,43 @@ export const actions = {
     )
     context.commit('SET_CLAIMS', response)
   },
-  async deleteUserAdmin(context, id){
-    this.$axios.$post(`${url_base}api/v1/admin/users/delete/${id}`, {}, {
-      headers: { Authorization: Cookies.get('token') },
-    }).then((response)=> location.reload())
+  async deleteUserAdmin(context, id) {
+    this.$axios
+      .$post(
+        `${url_base}api/v1/admin/users/delete/${id}`,
+        {},
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then((response) => location.reload())
   },
-  async blockUser(context, id){
-    this.$axios.$post(`${url_base}api/v1/admin/users/block/${id}`, {}, {
-      headers: { Authorization: Cookies.get('token') },
-    }).then((response)=> location.reload())
-  }
+  async blockUser(context, id) {
+    this.$axios
+      .$post(
+        `${url_base}api/v1/admin/users/block/${id}`,
+        {},
+        {
+          headers: { Authorization: Cookies.get('token') },
+        }
+      )
+      .then((response) => location.reload())
+  },
+  async getChats(context) {
+    this.$axios
+      .$get(`${url_base}api/v1/chatAPI`, {
+        headers: { Authorization: Cookies.get('token') },
+      })
+      .then((response) => context.commit('SET_CHATS', response))
+  },
+  async getChat(context, id) {
+    this.$axios
+      .$get(`${url_base}api/v1/chatAPI/chat/${id}`, {
+        headers: { Authorization: Cookies.get('token') },
+      })
+      .then((response) => {
+        context.commit('SET_CHAT', response)
+        return response
+      })
+  },
 }
