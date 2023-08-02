@@ -81,7 +81,9 @@
                 ? userOpened.name
                 : userIm[0].first_name
             "
-            :time="messageChat.created_at"
+            :time="
+              new Date(messageChat.created_at).toLocaleString('ru', options)
+            "
             :message="messageChat.message_text"
           />
         </div>
@@ -209,7 +211,7 @@
               :favorite="user.favourite"
               :gender="user.gender"
               :like_id="user.like_id"
-              @openParentChat="openUserChatMethod"
+              @openParentChat="openUserChatMethod(null, user.id)"
             />
           </div>
           <Loader v-else />
@@ -301,8 +303,15 @@ export default {
 
     const channel = pusher.subscribe('chat')
     channel.bind('App\\Events\\MessageSent', (data) => {
-      if (data.message.user_id != this.userIm[0].id)
+      if (data.message.user_id != this.userIm[0].id) {
         this.chat.push(data.message)
+        // this.$store.commit('SET_CHAT_UNREAD', data.message.dialog_id)
+        // this.chats.find(chat => chat.id === data.message.user_id).is_read = false
+        // this.usersSentFiltered.find(chat => chat.id === data.message.user_id).unread = true
+        // this.usersReceivedFiltered.find(chat => chat.id === data.message.user_id).unread = true
+      }
+      // this.chats.find(chat => chat.id === data.message.dialog_id).message_text = data.message.message_text
+
       this.message = this.message + ' '
       this.message = this.message.slice(0, -1)
       setTimeout(this.scrollToDown, 0)
@@ -313,6 +322,17 @@ export default {
     this.$store.commit('SET_WHO_LIKED_ME', [])
   },
   computed: {
+    options() {
+      return {
+        year: 'numeric',
+        month: 'numeric',
+        day: 'numeric',
+        hour: 'numeric',
+        minute: 'numeric',
+        second: 'numeric',
+        timeZone: 'Europe/Moscow',
+      }
+    },
     userIm() {
       return this.$store.state.user
     },
@@ -329,7 +349,7 @@ export default {
       return this.$store.state.url_base
     },
     chats() {
-      return this.$store.state.chats
+      return [...this.$store.state.chats]
     },
     users() {
       return this.usersReceived
@@ -387,9 +407,13 @@ export default {
       if (this.openUserChat && this.width > 768) this.chatOpen = true
     },
     openUserChatMethod(id, second_user_id) {
+      if (!id)
+        id = this.chats.find((chat) => chat.second_user === second_user_id).id
       this.$store.dispatch('getChat', id)
       this.chat_id = id
       this.userOpened = this.users.find((user) => user.id === second_user_id)
+      console.log(id)
+      console.log(second_user_id)
       // this.users.find((user) => user.id === id).unread = false
       // this.messages = this.user.messages;
       this.openUserChat = true
@@ -413,8 +437,9 @@ export default {
         message_text: this.message,
         user_id: this.userIm[0].id,
         to_user_id: this.userOpened.id,
-        created_at: new Date()
+        created_at: new Date(),
       })
+      // this.chats.find(chat => chat.id === this.chat_id).message_text = this.message
       setTimeout(this.scrollToDown, 0)
       this.message = ''
     },

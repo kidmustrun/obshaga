@@ -5,7 +5,7 @@ const requestHeaders = {
   'Content-Type': 'application/json',
   'X-Requested-With': 'XMLHttpRequest',
 }
-const url_base = 'https://4739-95-165-9-250.ngrok-free.app/'
+const url_base = 'https://8cb7-95-165-9-250.ngrok-free.app/'
 export const state = () => ({
   user: {},
   users: [],
@@ -17,7 +17,7 @@ export const state = () => ({
   overlay: false,
   loader: false,
   auth: false,
-  url_base: 'https://4739-95-165-9-250.ngrok-free.app',
+  url_base: 'https://8cb7-95-165-9-250.ngrok-free.app',
   filters: [],
   interests: [],
   genders: [],
@@ -124,6 +124,12 @@ export const mutations = {
   SET_CHAT: (state, payload) => {
     state.chat = payload
   },
+  SET_CHAT_READ: (state, payload) => {
+    state.chats.find(chat => chat.id === payload).is_read = true
+  },
+  SET_CHAT_UNREAD: (state, payload) => {
+    state.chats.find(chat => chat.id === payload).is_read = false
+  }
 }
 export const actions = {
   async registerUser({ commit, dispatch }, data) {

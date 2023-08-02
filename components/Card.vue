@@ -235,7 +235,7 @@ export default {
   ],
   methods: {
     openChat() {
-      this.$emit('openParentChat', this.id)
+      this.$emit('openParentChat')
     },
     changeFavorite() {
       if (this.favorite) this.$store.dispatch('deleteLikeFavorite', this.like_id)

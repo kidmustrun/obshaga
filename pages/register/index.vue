@@ -81,7 +81,9 @@
               required
             >
               <option value="" disabled selected hidden></option>
-              <option v-for="faculty in faculties" :value="faculty.id">{{ faculty.name }}</option>
+              <option v-for="faculty in faculties" :value="faculty.id">
+                {{ faculty.name }}
+              </option>
             </select>
             <span class="floating-label">факультет</span>
             <span class="error-label"></span>
@@ -97,7 +99,10 @@
               required
             >
               <option value="" disabled selected hidden></option>
-              <option v-for="direction in directionsFiltered" :value="direction.dir_id">
+              <option
+                v-for="direction in directionsFiltered"
+                :value="direction.dir_id"
+              >
                 {{ direction.name }}
               </option>
             </select>
@@ -146,13 +151,13 @@
     </div>
     <div class="d-flex justify-content-around">
       <NuxtLink class="link_grey" to="/auth">назад</NuxtLink>
-      <button
-        @click="toSearch"
+      <NuxtLink
         class="link"
         :style="[warning ? { color: '#FF5A7B' } : { color: '#ddd' }]"
+        to="/register/search"
       >
         вперед
-      </button>
+      </NuxtLink>
     </div>
   </div>
 </template>
@@ -216,16 +221,16 @@ export default {
         return directionsFilteredTemp
       }
     },
-  },
-  methods: {
-    toSearch() {
+    linkActive(){
       if (
         Object.values(this.user).every((item) => item != '') &&
         Object.values(this.user).some((item) => item != '')
       )
-        this.$nuxt.$options.router.push('/register/search')
-      else this.warning = false
+        return true
+      else return false
     },
+    },
+  methods: {
     setUserData() {
       this.$store.commit('SET_USER', {
         name: this.name,
